@@ -912,7 +912,8 @@ const fbDb = getFirestore(fbApp);
         var ic=$('codeInput').value.trim().toUpperCase();
         var qs=await getDocs(query(collection(fbDb,'groups'),where('code','==',ic)));
         if(qs.empty){ toast(t('badCode')); startBtn.disabled=false; return; }
-        G.groupId=qs.docs[0].id; G.code=ic; state.role='Member';
+        var gd=qs.docs[0]; G.groupId=gd.id; G.code=ic;
+        state.role=(gd.data().adminId===G.uid)?'Admin':'Member';   // original admin rejoins as Admin
       }
       await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
       saveLocal(); gotoMap();
