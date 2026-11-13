@@ -80,6 +80,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .ch.on .box{background:var(--grad);border-color:transparent;color:#fff;}
 .consent p{margin:0;font-size:13.5px;color:var(--ink-dim);line-height:1.5;}
 .consent p b{color:var(--ink);}
+.consent-hint{font-size:11.5px;color:var(--ink-faint);margin-top:11px;line-height:1.5;padding-left:37px;}
 .rolelock{display:flex;align-items:center;gap:11px;border:1px solid rgba(244,63,94,.3);background:var(--grad-soft);border-radius:16px;padding:15px 16px;font-size:14px;font-weight:600;}
 .rolelock .ic{font-size:20px;}
 .btn{width:100%;padding:17px;border:none;border-radius:16px;font-size:16px;font-weight:800;background:var(--grad);color:#fff;cursor:pointer;margin-top:22px;letter-spacing:.2px;box-shadow:0 14px 30px -10px rgba(244,63,94,.6);transition:.2s;}
@@ -114,7 +115,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .geo-circle{position:absolute;border-radius:50%;border:2px solid rgba(244,63,94,.65);background:rgba(244,63,94,.1);transform:translate(-50%,-50%);}
 .geo-label{position:absolute;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--ink);background:rgba(11,16,32,.82);border:1px solid rgba(244,63,94,.4);padding:3px 9px;border-radius:10px;white-space:nowrap;}
 
-.sosbtn{position:absolute;right:16px;bottom:294px;z-index:10;width:48px;height:48px;border-radius:14px;background:#ef4444;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(239,68,68,.6);letter-spacing:.5px;}
+.sosbtn{position:absolute;right:16px;bottom:238px;z-index:10;width:48px;height:48px;border-radius:14px;background:#ef4444;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(239,68,68,.6);letter-spacing:.5px;}
 .sosbtn.on{animation:sospulse 1s infinite;}
 .sosbtn:active{transform:scale(.95);}
 .sosalert{position:absolute;left:12px;right:12px;top:calc(72px + env(safe-area-inset-top));z-index:15;background:#ef4444;color:#fff;border-radius:14px;padding:12px 15px;font-size:13.5px;font-weight:700;box-shadow:var(--shadow);display:none;align-items:center;gap:9px;}
@@ -130,6 +131,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .place-chip .pc{font-size:11.5px;color:var(--ink-dim);margin-top:3px;}
 .place-chip .pc b{color:var(--green);}
 .places-empty{font-size:12px;color:var(--ink-faint);padding:4px 6px 2px;line-height:1.5;}
+.invitebar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--navy-700);border:1px dashed rgba(244,63,94,.5);margin-bottom:12px;}
+.invitebar .inv-l{flex:1;min-width:0;}
+.invitebar .inv-k{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-faint);font-weight:700;}
+.invitebar .inv-code{font-size:22px;font-weight:800;letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:2px;}
+.inv-copy{border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:12px;cursor:pointer;flex:none;}
+.mem-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:14px;cursor:pointer;flex:none;margin-left:4px;}
+.leave-btn{margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;font-weight:700;font-size:13.5px;cursor:pointer;}
 
 .modal{position:absolute;inset:0;z-index:30;background:rgba(5,8,18,.6);display:none;align-items:flex-end;}
 .modal.show{display:flex;}
@@ -152,10 +160,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .topbar .t .s{font-size:11.5px;color:var(--ink-dim);display:flex;align-items:center;gap:6px;}
 .modepill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--grad-soft);color:var(--ink);border:1px solid rgba(244,63,94,.35);text-transform:uppercase;letter-spacing:.5px;}
 .topbar .langtog{transform:scale(.9);transform-origin:right center;}
-.recenter{position:absolute;right:16px;bottom:236px;z-index:10;width:48px;height:48px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:20px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);}
+.recenter{position:absolute;right:16px;bottom:180px;z-index:10;width:48px;height:48px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:20px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);}
 .recenter:active{transform:scale(.95);}
-.sheet{position:absolute;left:0;right:0;bottom:0;z-index:10;background:var(--navy-800);border-top-left-radius:26px;border-top-right-radius:26px;border-top:1px solid var(--line);box-shadow:0 -20px 50px -20px rgba(0,0,0,.7);padding:10px 16px calc(16px + env(safe-area-inset-bottom));max-height:64dvh;display:flex;flex-direction:column;}
-.grab{width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.18);margin:4px auto 12px;}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:10;background:var(--navy-800);border-top-left-radius:26px;border-top-right-radius:26px;border-top:1px solid var(--line);box-shadow:0 -20px 50px -20px rgba(0,0,0,.7);padding:4px 16px calc(14px + env(safe-area-inset-bottom));max-height:82dvh;display:flex;flex-direction:column;transition:max-height .25s ease;}
+.grab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 9px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.grab-bar{width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);}
+.grab::after{content:"⌄";font-size:15px;line-height:.5;color:var(--ink-faint);transform:rotate(180deg);transition:transform .25s ease;}
+.sheet.expanded .grab::after{transform:rotate(0);}
+.sheet-body{display:flex;flex-direction:column;overflow-y:auto;min-height:0;padding-top:8px;}
 .sharebar{display:flex;align-items:center;gap:13px;padding:14px 15px;border-radius:18px;background:var(--navy-700);border:1px solid var(--line);margin-bottom:12px;}
 .sharebar .dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex:none;box-shadow:0 0 0 0 rgba(52,211,153,.7);animation:pulse 2s infinite;}
 .sharebar.off .dot{background:var(--ink-faint);animation:none;box-shadow:none;}
@@ -194,11 +206,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .connbadge.live{color:var(--green);border-color:rgba(52,211,153,.4);}
 .connbadge.live .d{background:var(--green);box-shadow:0 0 6px var(--green);}
 
+@media(max-width:859px){
+  .sheet:not(.expanded) .sheet-body{display:none;}
+  #mapscreen.sheet-open .recenter,#mapscreen.sheet-open .sosbtn{display:none;}
+}
 @media(min-width:860px){
   #welcome .wc-inner,#welcome .wc-foot{max-width:480px;margin-left:auto;margin-right:auto;width:100%;}
   #onboard{max-width:560px;margin:0 auto;}
   .topbar{padding:16px 20px;gap:12px;}
   .sheet{left:auto;right:18px;top:84px;bottom:18px;width:400px;max-height:none;border-radius:24px;border:1px solid var(--line);}
+  .sheet-body{display:flex!important;}
+  .grab{display:none;}
   .members{flex:1;}
   .recenter{bottom:auto;top:96px;right:436px;}
   .connbadge{bottom:20px;}
@@ -244,26 +262,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <label class="label" data-i18n="qName"></label>
       <input id="nameInput" class="input" data-i18n-ph="namePh" autocomplete="off" />
     </div>
-    <div class="field" id="roleField">
-      <label class="label" data-i18n="qRole"></label>
+    <div class="field">
+      <label class="label" data-i18n="qAction"></label>
       <div class="modes">
-        <div class="mode sel" data-role="Admin"><div class="ic">🛡️</div><h3 data-i18n="roleAdminT"></h3><p data-i18n="roleAdminD"></p></div>
-        <div class="mode" data-role="Member"><div class="ic">🧑‍🤝‍🧑</div><h3 data-i18n="roleMemberT"></h3><p data-i18n="roleMemberD"></p></div>
+        <div class="mode sel" data-act="create"><div class="ic">🛡️</div><h3 data-i18n="actCreateT"></h3><p data-i18n="actCreateD"></p></div>
+        <div class="mode" data-act="join"><div class="ic">🔑</div><h3 data-i18n="actJoinT"></h3><p data-i18n="actJoinD"></p></div>
       </div>
     </div>
-    <div class="field" id="roleLocked" style="display:none;">
-      <label class="label" data-i18n="qRole"></label>
-      <div class="rolelock"><span class="ic" id="roleLockIc">🛡️</span><span id="roleLockText"></span></div>
-    </div>
-    <div class="field">
-      <label class="label" data-i18n="qMode"></label>
-      <div class="modes">
-        <div class="mode" data-mode="Family"><div class="ic">👨‍👩‍👧‍👦</div><h3 data-i18n="modeFamilyT"></h3><p data-i18n="modeFamilyD"></p></div>
-        <div class="mode sel" data-mode="Team"><div class="ic">👷</div><h3 data-i18n="modeTeamT"></h3><p data-i18n="modeTeamD"></p></div>
+    <div id="joinFields" style="display:none;">
+      <div class="field">
+        <label class="label" data-i18n="qCode"></label>
+        <input id="codeInput" class="input" data-i18n-ph="codePh" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px;" />
+      </div>
+      <div class="field">
+        <label class="label" data-i18n="qMode"></label>
+        <div class="modes">
+          <div class="mode" data-mode="Family"><div class="ic">👨‍👩‍👧‍👦</div><h3 data-i18n="modeFamilyT"></h3><p data-i18n="modeFamilyD"></p></div>
+          <div class="mode sel" data-mode="Team"><div class="ic">👷</div><h3 data-i18n="modeTeamT"></h3><p data-i18n="modeTeamD"></p></div>
+        </div>
       </div>
     </div>
     <div class="consent">
       <label class="ch" id="consentToggle"><div class="box">✓</div><div><p data-i18n-html="consent"></p></div></label>
+      <div class="consent-hint" data-i18n="consentHint"></div>
     </div>
     <button id="startBtn" class="btn" disabled data-i18n="enterMap"></button>
   </section>
@@ -282,23 +303,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
     <div class="sosbtn" id="sosBtn">SOS</div>
     <div class="recenter" id="recenter">◎</div>
-    <div class="sheet">
-      <div class="grab"></div>
+    <div class="sheet" id="sheet">
+      <div class="grab" id="grab"><span class="grab-bar"></span></div>
       <div class="sharebar" id="sharebar">
         <div class="dot"></div>
         <div class="txt"><div class="a" id="shareTitle"></div><div class="b" id="shareSub"></div></div>
         <div class="switch on" id="shareSwitch"><div class="knob"></div></div>
       </div>
       <div class="selbar" id="selBar"></div>
-      <div class="rolebanner" id="roleBanner"><span class="ic">🛡️</span><span id="roleBannerTxt"></span></div>
-
-      <div class="places" id="placesBlock">
-        <div class="places-head"><span class="h" id="placesLabel"></span><button class="miniadd" id="addPlaceBtn"></button></div>
-        <div class="places-list" id="placesList"></div>
+      <div class="sheet-body" id="sheetBody">
+        <div class="rolebanner" id="roleBanner"><span class="ic">🛡️</span><span id="roleBannerTxt"></span></div>
+        <div class="invitebar" id="inviteBar" style="display:none;">
+          <div class="inv-l"><div class="inv-k" id="inviteLabel"></div><div class="inv-code" id="inviteCode">——————</div></div>
+          <button class="inv-copy" id="copyCodeBtn"></button>
+        </div>
+        <div class="places" id="placesBlock">
+          <div class="places-head"><span class="h" id="placesLabel"></span><button class="miniadd" id="addPlaceBtn"></button></div>
+          <div class="places-list" id="placesList"></div>
+        </div>
+        <div class="list-head"><div class="h" id="listLabel"></div><div class="c" id="onlineCount"></div></div>
+        <div class="members" id="members"></div>
+        <button class="leave-btn" id="leaveBtn"></button>
       </div>
-
-      <div class="list-head"><div class="h" id="listLabel"></div><div class="c" id="onlineCount"></div></div>
-      <div class="members" id="members"></div>
     </div>
     <div class="toast" id="toast"></div>
     <div class="connbadge" id="connBadge"><span class="d"></span><span id="connTxt">DEMO</span></div>
@@ -324,7 +350,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDX07FcgfEm8Mas9uhISthTzUTpX_U7BJY",
+  authDomain: "setupgo-locate.firebaseapp.com",
+  projectId: "setupgo-locate",
+  storageBucket: "setupgo-locate.firebasestorage.app",
+  messagingSenderId: "730043639963",
+  appId: "1:730043639963:web:5218ed9ba26e5df35bfe3e"
+};
+const fbApp = initializeApp(firebaseConfig);
+const fbAuth = getAuth(fbApp);
+const fbDb = getFirestore(fbApp);
+
 (function(){
   "use strict";
 
@@ -349,6 +391,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       modeFamilyT:"Family", modeFamilyD:"Para sa pamilya — makita ang isa't isa.",
       modeTeamT:"Team", modeTeamD:"Para sa trabaho — share habang naka-duty.",
       consent:"<b>Pumapayag akong i-share ang aking lokasyon.</b> Kusa kong pinipili ito at puwede kong ihinto anumang oras.",
+      consentHint:"Opsyonal — kung hindi i-tsek, papasok ka bilang view-only (hindi nagsa-share). Pwede mong i-on ang sharing mamaya.",
       enterMap:"Pumasok sa map →",
       live:"Live sharing", paused:"Naka-pause",
       shareOnT:"Nagsa-share ka ng lokasyon",
@@ -369,7 +412,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"Ilalagay sa kasalukuyang gitna ng map", save:"I-save", cancel:"Kanselahin",
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
-      sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong"
+      sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
+      qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
+      qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit",
+      invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", codeCopied:"Nakopya ang code ✓",
+      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo"
     },
     en:{
       tagline:"Consent-based location sharing",
@@ -390,6 +437,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       modeFamilyT:"Family", modeFamilyD:"For family — see each other.",
       modeTeamT:"Team", modeTeamD:"For work — share while on duty.",
       consent:"<b>I agree to share my location.</b> I choose this freely and can stop anytime.",
+      consentHint:"Optional — if unchecked, you enter view-only (not sharing). You can turn sharing on later.",
       enterMap:"Enter map →",
       live:"Live sharing", paused:"Paused",
       shareOnT:"You're sharing your location",
@@ -410,7 +458,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"Placed at the current map center", save:"Save", cancel:"Cancel",
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
-      sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help"
+      sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
+      qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
+      qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again",
+      invite:"Invite code — share with team/family", copyCode:"Copy", codeCopied:"Code copied ✓",
+      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group"
     }
   };
 
@@ -422,22 +474,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   function initials(n){return (n||'?').trim().split(/\s+/).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();}
 
   /* ================= capabilities ================= */
-  var CAP={db:null,user:null,isOwner:false};
-  (function bootCaps(){
-    if(!window.claude||typeof window.claude.use!=='function') return;
-    window.claude.use('user').then(function(u){CAP.user=u;try{CAP.isOwner=!!(u&&u.isOwner&&u.isOwner());}catch(e){}applyRoleUI();}).catch(function(){});
-    window.claude.use('db').then(function(d){CAP.db=d;applyRoleUI();}).catch(function(){});
-  })();
-  function applyRoleUI(){
-    var live=!!(CAP.db&&CAP.user), rf=$('roleField'), rl=$('roleLocked');
-    if(!rf||!rl) return;
-    if(live){
-      state.role=CAP.isOwner?'Admin':'Member';
-      rf.style.display='none'; rl.style.display='';
-      $('roleLockIc').textContent=CAP.isOwner?'🛡️':'🧑‍🤝‍🧑';
-      $('roleLockText').textContent=CAP.isOwner?t('roleLockAdmin'):t('roleLockMember');
-    }else{ rf.style.display=''; rl.style.display='none'; }
-  }
+  /* ================= Firebase group state ================= */
+  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false};
+  function clearLocal(){ try{['sg_name','sg_role','sg_mode','sg_group','sg_code'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
+  function saveLocal(){ try{localStorage.setItem('sg_name',state.name);localStorage.setItem('sg_role',state.role);localStorage.setItem('sg_mode',state.mode);localStorage.setItem('sg_group',G.groupId);localStorage.setItem('sg_code',G.code||'');}catch(e){} }
+  function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
+  function applyRoleUI(){}  // role is now decided by create/join, not identity
+  var state_action='create';  // 'create' | 'join'
 
   /* ================= demo data ================= */
   var team=[
@@ -470,10 +513,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
   /* ================= onboarding ================= */
   $('welcomeBtn').addEventListener('click',function(){$('welcome').classList.remove('active');$('onboard').classList.add('active');});
-  document.querySelectorAll('[data-role]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-role]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.role=m.dataset.role;});});
+  document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';refreshStart();});});
   document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
   var nameInput,startBtn,consentToggle;
-  function refreshStart(){startBtn.disabled=!(nameInput.value.trim().length>0&&state.consent);}
+  function refreshStart(){ var ok=nameInput.value.trim().length>0; if(state_action==='join'){ var c=$('codeInput'); ok=ok&&c&&c.value.trim().length>0; } startBtn.disabled=!ok; }
 
   /* ================= mini map engine ================= */
   var FALLBACK={lat:14.2726,lng:121.1256};
@@ -586,6 +629,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     else{$('shareTitle').textContent=t('shareOffT');$('shareSub').textContent=t('shareOffSub');bar.classList.add('off');$('shareSwitch').classList.remove('on');}
     $('connBadge').classList.toggle('live',state.live);
     $('connTxt').textContent=state.live?t('LIVE'):t('DEMO');
+    var inv=$('inviteBar');
+    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('copyCodeBtn').textContent=t('copyCode'); }
+    else { inv.style.display='none'; }
+    $('leaveBtn').textContent=t('leaveGroup');
     draw();
   }
 
@@ -593,7 +640,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     if(state.live){
       var out=[];
       Object.keys(state.liveDocs).forEach(function(id){
-        if(id===state.myId)return; var o=state.liveDocs[id]; if(!o)return;
+        if(id===G.uid)return; var o=state.liveDocs[id]; if(!o)return;
         if(state.role!=='Admin'){ if(o.role!=='Member')return; if(o.group!==state.mode)return; }
         var sharing=!!o.sharing, hasLoc=(o.lat!=null&&o.lng!=null);
         var mins=(Date.now()-(o.ts||0))/60000;
@@ -623,10 +670,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       var el=document.createElement('div'); el.className='member';
       var sc=m.status==='on'?'':(m.status==='idle'?'idle':'offl');
       var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—'));
+      var xbtn=state.role==='Admin'?'<button class="mem-x" data-rm="1">✕</button>':'';
       el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
         '<div class="info"><div class="nm">'+m.name+(m.tag?' <span class="tag">'+m.tag+'</span>':'')+'</div>'+
-        '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>';
+        '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>'+xbtn;
       el.addEventListener('click',function(){if(m._ll){selectMember(m.id);}});
+      if(state.role==='Admin'){ var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); }); }
       wrap.appendChild(el);
     });
   }
@@ -726,19 +775,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     renderSelBar(sel,center);
   }
 
-  /* ================= live backend ================= */
+  /* ================= Firebase backend ================= */
   var lastDbWrite=0;
-  function myDoc(){var o={name:state.name,role:state.role,group:state.mode,sharing:state.sharing,sos:state.sos,ts:Date.now(),lang:state.lang};if(state.youLatLng){o.lat=state.youLatLng.lat;o.lng=state.youLatLng.lng;}return o;}
+  function myMemberDoc(){var o={name:state.name,role:state.role,group:state.mode,sharing:state.sharing,sos:state.sos,ts:Date.now()};if(state.youLatLng){o.lat=state.youLatLng.lat;o.lng=state.youLatLng.lng;}return o;}
   function writeMyDoc(immediate){
-    if(!state.live||!CAP.db)return; var now=Date.now(); if(!immediate&&now-lastDbWrite<9000)return; lastDbWrite=now;
-    try{CAP.db.collection('locations').doc(state.myId).set(myDoc());}catch(e){}
+    if(!state.live||!G.groupId||!G.uid)return; var now=Date.now(); if(!immediate&&now-lastDbWrite<9000)return; lastDbWrite=now;
+    setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true}).catch(function(){});
   }
-  function normalizeSnap(snap){var out={};if(!snap)return out;try{
-    if(Array.isArray(snap.docs)){snap.docs.forEach(function(d){out[d.id]=(typeof d.data==='function'?d.data():d.data);});}
-    else if(typeof snap.forEach==='function'){snap.forEach(function(d){out[d.id]=(typeof d.data==='function'?d.data():d.data);});}
-    else if(Array.isArray(snap)){snap.forEach(function(d){out[d.id||d.path]=d.data||d;});}
-  }catch(e){}return out;}
-  function subscribeLive(){ if(!CAP.db)return; try{var col=CAP.db.collection('locations'); if(typeof col.onSnapshot==='function'){col.onSnapshot(function(snap){state.liveDocs=normalizeSnap(snap);if(state.onMap)draw();});}}catch(e){} }
+  function subscribeFB(){
+    if(G.unsub)G.unsub();
+    G.unsub=onSnapshot(collection(fbDb,'groups',G.groupId,'members'),function(snap){
+      var out={},meStill=false; snap.forEach(function(d){out[d.id]=d.data(); if(d.id===G.uid)meStill=true;});
+      state.liveDocs=out;
+      if(G.joinedOnce&&!meStill){ kicked(); return; }
+      if(meStill)G.joinedOnce=true;
+      if(state.onMap)draw();
+    },function(){});
+    if(G.gunsub)G.gunsub();
+    G.gunsub=onSnapshot(doc(fbDb,'groups',G.groupId),function(d){
+      if(!d.exists()){ kicked(); return; }
+      var g=d.data(); G.code=g.code; state.places=Array.isArray(g.places)?g.places:[];
+      if(state.onMap)refreshMap();
+    },function(){});
+  }
+  function kicked(){ clearLocal(); if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); toast(t('removed')); setTimeout(function(){location.reload();},1400); }
+  async function removeMember(uid){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',uid)); }catch(e){} }
+  async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} clearLocal(); location.reload(); }
+  async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
   var geoWatch=null;
   function applyFix(lat,lng){
     var firstFix=!state.hasFix; state.hasFix=true;
@@ -774,25 +837,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   /* ================= enter map ================= */
   var wired=false;
   function enterMap(){
-    MM.init(); state.onMap=true;
-    state.live=!!(CAP.db&&CAP.user);
-    if(state.live){state.role=CAP.isOwner?'Admin':'Member';}
+    MM.init(); state.onMap=true; state.live=true;
     refreshMap(); toast(t('tGetting'));
     placeYou(FALLBACK,false); draw();   // provisional until GPS fix arrives
-    if(state.live){
-      Promise.resolve(CAP.user.id()).then(function(id){state.myId=id||('me-'+Math.random().toString(36).slice(2));subscribeLive();writeMyDoc(true);trackYou();}).catch(function(){state.live=false;refreshMap();trackYou();});
-    }else{ trackYou(); }
+    subscribeFB(); writeMyDoc(true); trackYou();
     wireMap();
   }
   function wireMap(){
     if(wired)return; wired=true;
     $('shareSwitch').addEventListener('click',function(){
       state.sharing=!state.sharing;
+      if(state.sharing) state.consent=true;   // turning sharing on IS the consent
       MM.setMe(state.youLatLng,state.sharing);
       toast(state.sharing?t('tOn'):t('tOff'));
       writeMyDoc(true); refreshMap();
     });
     $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
+
+    $('copyCodeBtn').addEventListener('click',function(){ try{navigator.clipboard.writeText(G.code||'');}catch(e){} toast(t('codeCopied')); });
+    $('leaveBtn').addEventListener('click',function(){ if(confirm(t('leaveGroup')+'?')) leaveGroup(); });
+
+    $('grab').addEventListener('click',function(){
+      var open=$('sheet').classList.toggle('expanded');
+      $('mapscreen').classList.toggle('sheet-open',open);
+    });
 
     $('sosBtn').addEventListener('click',function(){
       state.sos=!state.sos;
@@ -815,7 +883,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     $('pmSave').addEventListener('click',function(){
       var nm=$('pmName').value.trim()||(state.lang==='fil'?'Lugar':'Place');
       state.places.push({id:'p'+Date.now(),name:nm,lat:MM.cLat,lng:MM.cLng,radius:pmRadius});
-      $('placeModal').classList.remove('show'); draw();
+      $('placeModal').classList.remove('show'); draw(); savePlaces();
     });
   }
 
@@ -823,11 +891,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   function toast(msg){var el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toTimer);toTimer=setTimeout(function(){el.classList.remove('show');},2400);}
 
   /* ================= init ================= */
-  applyI18n(); applyRoleUI();
+  applyI18n();
   nameInput=$('nameInput');startBtn=$('startBtn');consentToggle=$('consentToggle');
   consentToggle.addEventListener('click',function(){state.consent=!state.consent;consentToggle.classList.toggle('on',state.consent);refreshStart();});
   nameInput.addEventListener('input',refreshStart);
-  startBtn.addEventListener('click',function(){state.name=nameInput.value.trim();$('onboard').classList.remove('active');$('mapscreen').classList.add('active');setTimeout(enterMap,120);});
+  $('codeInput').addEventListener('input',refreshStart);
+
+  function gotoMap(){ $('welcome').classList.remove('active'); $('onboard').classList.remove('active'); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+
+  async function doStart(){
+    if(!G.ready||!G.uid){ toast(t('connecting')); return; }
+    state.name=nameInput.value.trim(); if(!state.name)return;
+    state.sharing=state.consent; startBtn.disabled=true;
+    try{
+      if(state_action==='create'){
+        var code=genCode(); var gref=doc(collection(fbDb,'groups'));
+        await setDoc(gref,{name:state.name,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
+        G.groupId=gref.id; G.code=code; state.role='Admin'; if(!state.mode)state.mode='Team';
+      }else{
+        var ic=$('codeInput').value.trim().toUpperCase();
+        var qs=await getDocs(query(collection(fbDb,'groups'),where('code','==',ic)));
+        if(qs.empty){ toast(t('badCode')); startBtn.disabled=false; return; }
+        G.groupId=qs.docs[0].id; G.code=ic; state.role='Member';
+      }
+      await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
+      saveLocal(); gotoMap();
+    }catch(e){ toast(t('errJoin')); startBtn.disabled=false; }
+  }
+  startBtn.addEventListener('click',doStart);
+
+  // Firebase auth + resume saved group
+  signInAnonymously(fbAuth).catch(function(){});
+  onAuthStateChanged(fbAuth,function(user){
+    if(!user)return; G.uid=user.uid; G.ready=true;
+    var g=null; try{g=localStorage.getItem('sg_group');}catch(e){}
+    if(g){
+      try{ state.name=localStorage.getItem('sg_name')||''; state.role=localStorage.getItem('sg_role')||'Member'; state.mode=localStorage.getItem('sg_mode')||'Team'; G.groupId=g; G.code=localStorage.getItem('sg_code')||''; }catch(e){}
+      gotoMap();
+    }
+  });
 
 })();
 </script>
