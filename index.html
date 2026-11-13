@@ -777,7 +777,7 @@ const fbDb = getFirestore(fbApp);
 
   /* ================= Firebase backend ================= */
   var lastDbWrite=0;
-  function myMemberDoc(){var o={name:state.name,role:state.role,group:state.mode,sharing:state.sharing,sos:state.sos,ts:Date.now()};if(state.youLatLng){o.lat=state.youLatLng.lat;o.lng=state.youLatLng.lng;}return o;}
+  function myMemberDoc(){var o={name:state.name,role:state.role,group:state.mode,sharing:state.sharing,sos:state.sos,ts:Date.now()};if(state.hasFix&&state.youLatLng){o.lat=state.youLatLng.lat;o.lng=state.youLatLng.lng;}else{o.lat=null;o.lng=null;}return o;}
   function writeMyDoc(immediate){
     if(!state.live||!G.groupId||!G.uid)return; var now=Date.now(); if(!immediate&&now-lastDbWrite<9000)return; lastDbWrite=now;
     setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true}).catch(function(){});
