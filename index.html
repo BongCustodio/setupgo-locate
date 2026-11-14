@@ -773,6 +773,7 @@ const fbDb = getFirestore(fbApp);
       el.onclick=function(){ if(who){ MM.setView(who._ll[0],who._ll[1],16); selectMember(who.id); } };
     } else { el.classList.remove('show'); el.innerHTML=''; el.onclick=null; }
     $('sosBtn').classList.toggle('on',state.sos);
+    $('sosBtn').textContent=state.sos?'STOP':'SOS';
   }
   function pushHist(id,lat,lng){
     var h=state.history[id]||(state.history[id]=[]); var last=h[h.length-1];
@@ -963,9 +964,11 @@ const fbDb = getFirestore(fbApp);
     state.sharing=state.consent; startBtn.disabled=true;
     try{
       if(state_action==='create'){
-        var code=genCode(); var gref=doc(collection(fbDb,'groups'));
-        await setDoc(gref,{name:state.name,code:code,adminId:G.uid,places:[],createdAt:Date.now()});
-        G.groupId=gref.id; G.code=code; state.role='Admin'; if(!state.mode)state.mode='Team';
+        // reuse the group this user already owns, so the code stays the same
+        var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
+        if(!ex.empty){ var ed=ex.docs[0]; G.groupId=ed.id; G.code=ed.data().code||genCode(); }
+        else { var code=genCode(); var gref=doc(collection(fbDb,'groups')); await setDoc(gref,{name:state.name,code:code,adminId:G.uid,places:[],createdAt:Date.now()}); G.groupId=gref.id; G.code=code; }
+        state.role='Admin'; if(!state.mode)state.mode='Team';
       }else{
         var ic=$('codeInput').value.trim().toUpperCase();
         var qs=await getDocs(query(collection(fbDb,'groups'),where('code','==',ic)));
