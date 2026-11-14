@@ -787,7 +787,10 @@ const fbDb = getFirestore(fbApp);
       el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
         '<div class="info"><div class="nm">'+m.name+tagHtml+'</div>'+
         '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>'+xbtn;
-      el.addEventListener('click',function(){if(m._ll){selectMember(m.id);}});
+      el.addEventListener('click',function(){
+        if(m._ll){ collapseSheet(); MM.setView(m._ll[0],m._ll[1],16); selectMember(m.id); }
+        else { toast(m.name+' — '+t('gpsWait')); }
+      });
       if(state.role==='Admin'){
         var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); });
         var gb=el.querySelector('.tag-btn'); if(gb) gb.addEventListener('click',function(e){e.stopPropagation(); setMemberGroup(m.id, m.role==='Family'?'Team':'Family'); });
@@ -871,6 +874,7 @@ const fbDb = getFirestore(fbApp);
     if(state.live){ var h=state.history[m.id]; return (h&&h.length>=2)?h:null; }
     return synthTrail(m);
   }
+  function collapseSheet(){ $('sheet').classList.remove('expanded'); $('mapscreen').classList.remove('sheet-open'); }
   function selectMember(id){ if(id==='me'){state.selected=null;draw();return;} state.selected=id; var m=MM.byId[id]; if(m)MM.cLat=m.lat,MM.cLng=m.lng; draw(); }
   function renderSelBar(sel,center){
     var bar=$('selBar');
@@ -956,36 +960,28 @@ const fbDb = getFirestore(fbApp);
   async function setMemberGroup(uid,g){ try{ await updateDoc(doc(fbDb,'groups',G.groupId,'members',uid),{group:g}); }catch(e){} }
   async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} clearLocal(); location.reload(); }
   async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
-  var geoWatch=null, geoRetry=null;
+  var geoPoll=null;
   function applyFix(lat,lng){
     var firstFix=!state.hasFix; state.hasFix=true;
+    // skip redundant work if we barely moved (keeps the app light)
+    var moved=!state.youLatLng||Math.abs(state.youLatLng.lat-lat)>0.00003||Math.abs(state.youLatLng.lng-lng)>0.00003;
     placeYou({lat:lat,lng:lng}, firstFix);   // recenter on first good fix
     if(firstFix) toast(t('tFound'));
-    if(geoRetry){ clearInterval(geoRetry); geoRetry=null; }  // stop retrying once we have any fix
-    if(state.live) writeMyDoc(true);
-    draw();
+    if(state.live && (firstFix||moved)) writeMyDoc(firstFix);   // immediate on first fix, throttled after
+    if(firstFix||moved) draw();
   }
-  function looseFix(){
-    if(state.hasFix||!navigator.geolocation) return;
+  function pollOnce(){
+    if(!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-      function(err){ if(err&&err.code===1) toast(t('errDenied')); },
-      {enableHighAccuracy:false,timeout:20000,maximumAge:60000});   // accept approximate location too
-  }
-  function onGeoErr(err){
-    if(state.hasFix) return;
-    if(err && err.code===1){ toast(t('errDenied')); }   // permission denied
-    else { toast(t('errGps')); looseFix(); }             // timeout / unavailable → try a looser fix now
+      function(err){ if(!state.hasFix){ if(err&&err.code===1) toast(t('errDenied')); else toast(t('errGps')); } },
+      {enableHighAccuracy:true,timeout:25000,maximumAge:25000});   // cached fix up to 25s old = lighter
   }
   function trackYou(){
     if(!navigator.geolocation){toast(t('errGps'));return;}
-    if(geoWatch!=null) return;
-    geoWatch=navigator.geolocation.watchPosition(
-      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-      onGeoErr,
-      {enableHighAccuracy:true,maximumAge:5000,timeout:25000});
-    // keep trying every 15s with a looser fix until we lock on (handles indoors / weak GPS)
-    if(!geoRetry) geoRetry=setInterval(looseFix,15000);
+    if(geoPoll!=null) return;
+    pollOnce();                              // immediate first fix
+    geoPoll=setInterval(pollOnce,30000);     // then every 30s — lighter on battery and CPU
   }
   function forceLocate(){
     if(!navigator.geolocation){toast(t('errGps'));return;}
