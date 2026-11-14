@@ -1,5 +1,5 @@
 /* SetupGo Locate — service worker (offline shell) */
-var CACHE = 'setupgo-locate-v15';
+var CACHE = 'setupgo-locate-v16';
 var ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', function(e){

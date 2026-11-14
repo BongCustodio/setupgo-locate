@@ -1092,7 +1092,7 @@ const fbDb = getFirestore(fbApp);
         await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
         saveLocal(); gotoMap();
       } else { goOnboardCreate(); }
-    }catch(e){ goOnboardCreate(); }
+    }catch(e){ toast('grp: '+((e&&e.code)||e)); goOnboardCreate(); }
   }
   async function enterAsAdmin(){
     var u=fbAuth.currentUser; if(!u)return;
@@ -1105,7 +1105,7 @@ const fbDb = getFirestore(fbApp);
     if(!em||!pw){ toast(t('loginErr')); return; }
     $('loginSignIn').disabled=true;
     try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
-    catch(e){ toast(t('loginErr')); }
+    catch(e){ toast(t('loginErr')+' ['+((e&&e.code)||e)+']'); }
     $('loginSignIn').disabled=false;
   }
   async function adminSignUp(){
@@ -1119,7 +1119,7 @@ const fbDb = getFirestore(fbApp);
       await enterAsAdmin();
     }catch(e){
       try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
-      catch(e2){ toast(t('signupErr')); }
+      catch(e2){ toast(t('signupErr')+' ['+((e&&e.code)||e)+']'); }
     }
     $('loginSignUp').disabled=false;
   }
