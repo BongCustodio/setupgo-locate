@@ -603,9 +603,15 @@ const fbDb = getFirestore(fbApp);
 
   /* ================= onboarding ================= */
   $('welcomeBtn').addEventListener('click',function(){$('welcome').classList.remove('active');$('onboard').classList.add('active');});
-  function showLogin(){ ['welcome','onboard'].forEach(function(s){$(s).classList.remove('active');}); $('adminlogin').classList.add('active'); try{$('loginEmail').focus();}catch(e){} }
+  var loginFrom='welcome';
+  function showLogin(){
+    loginFrom=$('mapscreen').classList.contains('active')?'mapscreen':'welcome';
+    if(loginFrom==='mapscreen' && typeof collapseSheet==='function') collapseSheet();
+    ['welcome','onboard','mapscreen'].forEach(function(s){$(s).classList.remove('active');});
+    $('adminlogin').classList.add('active'); try{$('loginEmail').focus();}catch(e){}
+  }
   $('adminLoginBtn').addEventListener('click',showLogin);
-  $('loginBack').addEventListener('click',function(){ $('adminlogin').classList.remove('active'); $('welcome').classList.add('active'); });
+  $('loginBack').addEventListener('click',function(){ $('adminlogin').classList.remove('active'); $(loginFrom).classList.add('active'); });
   document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';refreshStart();});});
   document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
   var nameInput,startBtn,consentToggle;
