@@ -558,7 +558,7 @@ const fbDb = getFirestore(fbApp);
   /* ================= capabilities ================= */
   /* ================= Firebase group state ================= */
   var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,email:null};
-  var booted=false;
+  var booted=false; var _mdbg='';
   function clearLocal(){ try{['sg_name','sg_role','sg_mode','sg_group','sg_code'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
   function saveLocal(){ try{localStorage.setItem('sg_name',state.name);localStorage.setItem('sg_role',state.role);localStorage.setItem('sg_mode',state.mode);localStorage.setItem('sg_group',G.groupId);localStorage.setItem('sg_code',G.code||'');}catch(e){} }
   function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
@@ -794,6 +794,7 @@ const fbDb = getFirestore(fbApp);
       }
       wrap.appendChild(el);
     });
+    _mdbg='list:'+list.length+' rows:'+wrap.children.length+' h:'+wrap.offsetHeight;
   }
 
   function peopleForGeo(list){
@@ -923,6 +924,7 @@ const fbDb = getFirestore(fbApp);
     var ks=Object.keys(state.liveDocs||{});
     L.push('docs:'+ks.length+(state.live?' LIVE':' demo'));
     ks.forEach(function(id){ var o=state.liveDocs[id]||{}; L.push((id===G.uid?'*':'• ')+(o.name||'?')+' ['+(o.group||'?')+'] sh:'+(o.sharing?'Y':'N')+' loc:'+((o.lat!=null&&o.lng!=null)?'Y':'N')); });
+    if(_mdbg) L.push('render '+_mdbg);
     el.textContent=L.join('\n');
   }
 
