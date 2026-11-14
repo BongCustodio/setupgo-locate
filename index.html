@@ -300,6 +300,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <button id="loginSignIn" class="btn" data-i18n="btnSignIn"></button>
       <button id="loginSignUp" class="btn ghost" data-i18n="btnSignUp"></button>
     </div>
+    <div id="loginMsg" style="text-align:center;font-size:13px;color:var(--amber,#f59e0b);min-height:18px;margin-top:12px;font-weight:700;"></div>
     <button id="loginForgot" class="btn-link" data-i18n="forgotPw" style="margin-top:6px;"></button>
     <button id="loginBack" class="btn-link" data-i18n="loginBack"></button>
     <div class="legal" data-i18n="loginHint" style="margin-top:4px;"></div>
@@ -1083,16 +1084,18 @@ const fbDb = getFirestore(fbApp);
   }
   async function loadMyAdminGroup(){
     try{
+      lmsg('4 Hinahanap ang grupo mo…');
       var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
       if(!ex.empty){
+        lmsg('5 Nakita! Pumapasok…');
         var ed=ex.docs[0]; G.groupId=ed.id; G.code=ed.data().code||'';
         state.role='Admin';
         if(!state.name){ try{state.name=localStorage.getItem('sg_name')||'';}catch(e){} if(!state.name)state.name=ed.data().name||'Admin'; }
         if(!state.mode)state.mode='Team';
         await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
         saveLocal(); gotoMap();
-      } else { goOnboardCreate(); }
-    }catch(e){ toast('grp: '+((e&&e.code)||e)); goOnboardCreate(); }
+      } else { lmsg('5b Walang grupo — gagawa…'); goOnboardCreate(); }
+    }catch(e){ lmsg('ERR grp: '+((e&&e.code)||e)); goOnboardCreate(); }
   }
   async function enterAsAdmin(){
     var u=fbAuth.currentUser; if(!u)return;
@@ -1100,26 +1103,28 @@ const fbDb = getFirestore(fbApp);
     clearLocal();              // explicit admin login overrides any stale member context on this device
     await loadMyAdminGroup();
   }
+  function lmsg(s){ var e=$('loginMsg'); if(e) e.textContent=s; }
   async function adminSignIn(){
     var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
-    if(!em||!pw){ toast(t('loginErr')); return; }
-    $('loginSignIn').disabled=true;
-    try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
-    catch(e){ toast(t('loginErr')+' ['+((e&&e.code)||e)+']'); }
+    if(!em||!pw){ lmsg('Ilagay ang email at password'); return; }
+    $('loginSignIn').disabled=true; lmsg('1 Nagla-log in…');
+    try{ await signInWithEmailAndPassword(fbAuth,em,pw); lmsg('2 OK, pumapasok…'); await enterAsAdmin(); }
+    catch(e){ lmsg('ERR login: '+((e&&e.code)||e)); }
     $('loginSignIn').disabled=false;
   }
   async function adminSignUp(){
     var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
-    if(!em||pw.length<6){ toast(t('signupErr')); return; }
-    $('loginSignUp').disabled=true;
+    if(!em||pw.length<6){ lmsg('Email + password (6+ karakter)'); return; }
+    $('loginSignUp').disabled=true; lmsg('1 Gumagawa ng account…');
     try{
       var cur=fbAuth.currentUser;
-      if(cur && cur.isAnonymous){ await linkWithCredential(cur, EmailAuthProvider.credential(em,pw)); }
-      else { await createUserWithEmailAndPassword(fbAuth,em,pw); }
-      await enterAsAdmin();
+      if(cur && cur.isAnonymous){ lmsg('1a Ini-link sa email…'); await linkWithCredential(cur, EmailAuthProvider.credential(em,pw)); }
+      else { lmsg('1b Bagong account…'); await createUserWithEmailAndPassword(fbAuth,em,pw); }
+      lmsg('2 OK, pumapasok…'); await enterAsAdmin();
     }catch(e){
-      try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
-      catch(e2){ toast(t('signupErr')+' ['+((e&&e.code)||e)+']'); }
+      lmsg('2b Sinusubok mag-login… ['+((e&&e.code)||e)+']');
+      try{ await signInWithEmailAndPassword(fbAuth,em,pw); lmsg('3 OK, pumapasok…'); await enterAsAdmin(); }
+      catch(e2){ lmsg('ERR: '+((e2&&e2.code)||e2)); }
     }
     $('loginSignUp').disabled=false;
   }
