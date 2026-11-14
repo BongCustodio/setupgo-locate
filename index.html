@@ -86,6 +86,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn{width:100%;padding:17px;border:none;border-radius:16px;font-size:16px;font-weight:800;background:var(--grad);color:#fff;cursor:pointer;margin-top:22px;letter-spacing:.2px;box-shadow:0 14px 30px -10px rgba(244,63,94,.6);transition:.2s;}
 .btn:disabled{opacity:.4;box-shadow:none;cursor:not-allowed;}
 .btn:active:not(:disabled){transform:translateY(1px);}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
+.btn-link{width:100%;margin-top:14px;background:transparent;border:none;color:var(--rose,#ff7a9c);font-size:14px;font-weight:700;cursor:pointer;padding:8px;}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn{margin-top:22px;}
+.acct-row{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--navy-800);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.acct-row .ai{font-size:12.5px;color:var(--ink-faint);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.acct-row button{flex:none;padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--ink);font-weight:700;font-size:12.5px;cursor:pointer;}
+.acct-row.secure{flex-direction:column;align-items:stretch;}
+.acct-row.secure button{width:100%;background:var(--grad);color:#fff;border:none;padding:12px;font-size:13.5px;}
+.acct-row.secure .sh{font-size:11.5px;color:var(--ink-faint);text-align:center;margin-top:6px;}
 .legal{text-align:center;font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.5;}
 
 /* ---- mini map ---- */
@@ -140,6 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .inv-sbtn{flex:1;border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:11px 8px;border-radius:12px;cursor:pointer;}
 .mem-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:14px;cursor:pointer;flex:none;margin-left:4px;}
 .leave-btn{margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;font-weight:700;font-size:13.5px;cursor:pointer;}
+.gps-wait{color:var(--amber,#f59e0b);font-weight:700;font-size:12px;}
 .filtertabs{display:flex;gap:6px;background:var(--navy-700);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px;}
 .filtertabs button{flex:1;border:none;background:transparent;color:var(--ink-dim);font-size:12.5px;font-weight:700;padding:8px 6px;border-radius:10px;cursor:pointer;}
 .filtertabs button.sel{background:var(--grad);color:#fff;}
@@ -256,8 +267,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     </div>
     <div class="wc-foot">
       <button id="welcomeBtn" class="btn" style="margin-top:0;" data-i18n="getStarted"></button>
+      <button id="adminLoginBtn" class="btn-link" data-i18n="adminLoginBtn"></button>
       <div class="legal" data-i18n-html="legal"></div>
     </div>
+  </section>
+
+  <!-- ADMIN LOGIN -->
+  <section id="adminlogin" class="screen">
+    <div class="ob-top">
+      <div class="logo"><span>S</span></div>
+      <div style="flex:1;">
+        <div class="brand-name" data-i18n="loginTitle"></div>
+        <div class="faint" style="font-size:12px;" data-i18n="loginSub"></div>
+      </div>
+      <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label class="label" data-i18n="qEmail"></label>
+      <input id="loginEmail" class="input" type="email" data-i18n-ph="emailPh" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label class="label" data-i18n="qPass"></label>
+      <input id="loginPass" class="input" type="password" data-i18n-ph="passPh" autocomplete="current-password" />
+    </div>
+    <div class="btn-row">
+      <button id="loginSignIn" class="btn" data-i18n="btnSignIn"></button>
+      <button id="loginSignUp" class="btn ghost" data-i18n="btnSignUp"></button>
+    </div>
+    <button id="loginBack" class="btn-link" data-i18n="loginBack"></button>
+    <div class="legal" data-i18n="loginHint" style="margin-top:4px;"></div>
   </section>
 
   <!-- SETUP -->
@@ -348,6 +386,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         </div>
         <div class="list-head"><div class="h" id="listLabel"></div><div class="c" id="onlineCount"></div></div>
         <div class="members" id="members"></div>
+        <div id="acctBox"></div>
         <button class="leave-btn" id="leaveBtn"></button>
       </div>
     </div>
@@ -377,7 +416,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, linkWithCredential, EmailAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -433,6 +472,7 @@ const fbDb = getFirestore(fbApp);
       emptyLive:"Wala pang ibang member na nakabukas. Ipabukas sa kanila ang parehong link para lumitaw sila rito.",
       tGetting:"Kinukuha ang iyong lokasyon…", tFound:"Nakita ang iyong lokasyon ✓",
       tNoGps:"Walang GPS access — hindi ka makikita hangga't hindi pinapayagan", tOn:"Naka-on ang sharing ✓", tOff:"Itinigil ang sharing",
+      errDenied:"Na-block ang location — i-allow sa 🔒 sa address bar, tapos i-reload", errGps:"Hinahanap pa ang GPS — subukang lumabas sa mas bukas na lugar", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"Ilalagay sa kasalukuyang gitna ng map", save:"I-save", cancel:"Kanselahin",
@@ -442,7 +482,13 @@ const fbDb = getFirestore(fbApp);
       qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit", nameTaken:"Ginamit na ang pangalang ito sa grupo — magdagdag ng initial ng apelyido (hal. Fernando C.)",
       invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
       inviteFam:"📨 Imbita sa Pamilya", inviteTeam:"📨 Imbita sa Team", joiningLabel:"Sasali ka sa grupong:",
-      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
+      leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:",
+      adminLoginBtn:"May admin account? Mag-login →", loginTitle:"Admin login", loginSub:"Mag-login para maging admin ka sa LAHAT ng device mo (PC at phone).",
+      qEmail:"Email", emailPh:"ikaw@email.com", qPass:"Password", passPh:"kahit 6 na karakter",
+      btnSignIn:"Mag-login", btnSignUp:"Gumawa ng account", loginBack:"← Bumalik",
+      loginHint:"Members: hindi n'yo kailangan ito — gamitin lang ang invite link mula sa admin.",
+      loginErr:"Maling email o password", signupErr:"Hindi magawa ang account — baka ginamit na ang email o maikli ang password",
+      secureEmail:"🔒 I-secure sa email", secureHint:"para admin ka sa lahat ng device", adminAs:"Admin:", logoutBtn:"Mag-logout"
     },
     en:{
       tagline:"Consent-based location sharing",
@@ -480,6 +526,7 @@ const fbDb = getFirestore(fbApp);
       emptyLive:"No other members are open yet. Have them open the same link to appear here.",
       tGetting:"Getting your location…", tFound:"Location found ✓",
       tNoGps:"No GPS access — you won't be visible until you allow it", tOn:"Sharing is on ✓", tOff:"Sharing stopped",
+      errDenied:"Location is blocked — allow it via the 🔒 in the address bar, then reload", errGps:"Still finding GPS — try moving to a more open spot", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"Placed at the current map center", save:"Save", cancel:"Cancel",
@@ -489,7 +536,13 @@ const fbDb = getFirestore(fbApp);
       qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again", nameTaken:"That name is already used — add a surname initial (e.g. Fernando C.)",
       invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
       inviteFam:"📨 Invite to Family", inviteTeam:"📨 Invite to Team", joiningLabel:"You'll join:",
-      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
+      leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:",
+      adminLoginBtn:"Have an admin account? Log in →", loginTitle:"Admin login", loginSub:"Log in to be admin on ALL your devices (PC and phone).",
+      qEmail:"Email", emailPh:"you@email.com", qPass:"Password", passPh:"at least 6 characters",
+      btnSignIn:"Log in", btnSignUp:"Create account", loginBack:"← Back",
+      loginHint:"Members: you don't need this — just use the invite link from the admin.",
+      loginErr:"Wrong email or password", signupErr:"Couldn't create the account — email may be in use or the password is too short",
+      secureEmail:"🔒 Secure with email", secureHint:"to be admin on all devices", adminAs:"Admin:", logoutBtn:"Log out"
     }
   };
 
@@ -502,7 +555,8 @@ const fbDb = getFirestore(fbApp);
 
   /* ================= capabilities ================= */
   /* ================= Firebase group state ================= */
-  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false};
+  var G={uid:null,ready:false,groupId:null,code:null,unsub:null,gunsub:null,joinedOnce:false,email:null};
+  var booted=false;
   function clearLocal(){ try{['sg_name','sg_role','sg_mode','sg_group','sg_code'].forEach(function(k){localStorage.removeItem(k);});}catch(e){} }
   function saveLocal(){ try{localStorage.setItem('sg_name',state.name);localStorage.setItem('sg_role',state.role);localStorage.setItem('sg_mode',state.mode);localStorage.setItem('sg_group',G.groupId);localStorage.setItem('sg_code',G.code||'');}catch(e){} }
   function genCode(){ var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s; }
@@ -540,6 +594,9 @@ const fbDb = getFirestore(fbApp);
 
   /* ================= onboarding ================= */
   $('welcomeBtn').addEventListener('click',function(){$('welcome').classList.remove('active');$('onboard').classList.add('active');});
+  function showLogin(){ ['welcome','onboard'].forEach(function(s){$(s).classList.remove('active');}); $('adminlogin').classList.add('active'); try{$('loginEmail').focus();}catch(e){} }
+  $('adminLoginBtn').addEventListener('click',showLogin);
+  $('loginBack').addEventListener('click',function(){ $('adminlogin').classList.remove('active'); $('welcome').classList.add('active'); });
   document.querySelectorAll('[data-act]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-act]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state_action=m.dataset.act;$('joinFields').style.display=(state_action==='join')?'':'none';refreshStart();});});
   document.querySelectorAll('[data-mode]').forEach(function(m){m.addEventListener('click',function(){document.querySelectorAll('[data-mode]').forEach(function(x){x.classList.remove('sel');});m.classList.add('sel');state.mode=m.dataset.mode;});});
   var nameInput,startBtn,consentToggle;
@@ -668,7 +725,22 @@ const fbDb = getFirestore(fbApp);
     if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('shareFam').textContent=t('inviteFam'); $('shareTeam').textContent=t('inviteTeam'); }
     else { inv.style.display='none'; }
     $('leaveBtn').textContent=t('leaveGroup');
+    renderAcct();
     draw();
+  }
+  function renderAcct(){
+    var box=$('acctBox'); if(!box)return; box.innerHTML='';
+    if(state.role==='Admin' && !G.email){
+      var d=document.createElement('div'); d.className='acct-row secure';
+      var b=document.createElement('button'); b.textContent=t('secureEmail'); b.addEventListener('click',showLogin);
+      var h=document.createElement('div'); h.className='sh'; h.textContent=t('secureHint');
+      d.appendChild(b); d.appendChild(h); box.appendChild(d);
+    } else if(G.email){
+      var r=document.createElement('div'); r.className='acct-row';
+      var ai=document.createElement('div'); ai.className='ai'; ai.textContent=t('adminAs')+' '+G.email;
+      var lo=document.createElement('button'); lo.textContent=t('logoutBtn'); lo.addEventListener('click',function(){ if(confirm(t('logoutBtn')+'?')) doLogout(); });
+      r.appendChild(ai); r.appendChild(lo); box.appendChild(r);
+    }
   }
 
   function currentList(center){
@@ -683,7 +755,7 @@ const fbDb = getFirestore(fbApp);
         var sharing=!!o.sharing, hasLoc=(o.lat!=null&&o.lng!=null);
         var mins=(Date.now()-(o.ts||0))/60000;
         var status=!sharing?'offl':(mins<2?'on':(mins<15?'idle':'offl'));
-        out.push({id:id,name:o.name||'—',color:colorFor(id),tag:state.role==='Admin'?groupLabel(o.group):'',role:o.group||'',status:status,metaText:relTime(o.ts||0),sos:!!o.sos,_ll:(sharing&&hasLoc)?[o.lat,o.lng]:null});
+        out.push({id:id,name:o.name||'—',color:colorFor(id),tag:state.role==='Admin'?groupLabel(o.group):'',role:o.group||'',status:status,metaText:relTime(o.ts||0),sos:!!o.sos,_ll:(sharing&&hasLoc)?[o.lat,o.lng]:null,nogps:(sharing&&!hasLoc&&status!=='offl')});
       });
       out.sort(function(a,b){return (a.status==='offl')-(b.status==='offl');});
       return out;
@@ -707,7 +779,7 @@ const fbDb = getFirestore(fbApp);
     list.forEach(function(m){
       var el=document.createElement('div'); el.className='member';
       var sc=m.status==='on'?'':(m.status==='idle'?'idle':'offl');
-      var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—'));
+      var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.nogps?('<span class="gps-wait">'+t('gpsWait')+'</span>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—')));
       var xbtn=state.role==='Admin'?'<button class="mem-x" data-rm="1">✕</button>':'';
       var tagHtml=(state.role==='Admin'&&m.role)?' <button class="tag tag-btn">'+groupLabel(m.role)+' ⇄</button>':(m.tag?' <span class="tag">'+m.tag+'</span>':'');
       el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
@@ -850,35 +922,47 @@ const fbDb = getFirestore(fbApp);
   async function setMemberGroup(uid,g){ try{ await updateDoc(doc(fbDb,'groups',G.groupId,'members',uid),{group:g}); }catch(e){} }
   async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} clearLocal(); location.reload(); }
   async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
-  var geoWatch=null;
+  var geoWatch=null, geoRetry=null;
   function applyFix(lat,lng){
     var firstFix=!state.hasFix; state.hasFix=true;
     placeYou({lat:lat,lng:lng}, firstFix);   // recenter on first good fix
     if(firstFix) toast(t('tFound'));
-    if(state.live) writeMyDoc(false);
+    if(geoRetry){ clearInterval(geoRetry); geoRetry=null; }  // stop retrying once we have any fix
+    if(state.live) writeMyDoc(true);
     draw();
   }
+  function looseFix(){
+    if(state.hasFix||!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+      function(err){ if(err&&err.code===1) toast(t('errDenied')); },
+      {enableHighAccuracy:false,timeout:20000,maximumAge:60000});   // accept approximate location too
+  }
+  function onGeoErr(err){
+    if(state.hasFix) return;
+    if(err && err.code===1){ toast(t('errDenied')); }   // permission denied
+    else { toast(t('errGps')); looseFix(); }             // timeout / unavailable → try a looser fix now
+  }
   function trackYou(){
-    if(!navigator.geolocation){toast(t('tNoGps'));return;}
+    if(!navigator.geolocation){toast(t('errGps'));return;}
     if(geoWatch!=null) return;
     geoWatch=navigator.geolocation.watchPosition(
       function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-      function(){
-        if(state.hasFix) return;
-        // high-accuracy failed/timed out — try a looser fix once
-        navigator.geolocation.getCurrentPosition(
-          function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
-          function(){ toast(t('tNoGps')); },
-          {enableHighAccuracy:false,timeout:15000,maximumAge:60000});
-      },
-      {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+      onGeoErr,
+      {enableHighAccuracy:true,maximumAge:5000,timeout:25000});
+    // keep trying every 15s with a looser fix until we lock on (handles indoors / weak GPS)
+    if(!geoRetry) geoRetry=setInterval(looseFix,15000);
   }
   function forceLocate(){
-    if(!navigator.geolocation){toast(t('tNoGps'));return;}
+    if(!navigator.geolocation){toast(t('errGps'));return;}
     toast(t('tGetting'));
     navigator.geolocation.getCurrentPosition(
-      function(pos){ state.hasFix=true; placeYou({lat:pos.coords.latitude,lng:pos.coords.longitude},true); if(state.live)writeMyDoc(true); draw(); toast(t('tFound')); },
-      function(){ toast(t('tNoGps')); },
+      function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+      function(err){ if(err&&err.code===1){toast(t('errDenied'));return;}
+        navigator.geolocation.getCurrentPosition(
+          function(pos){ applyFix(pos.coords.latitude,pos.coords.longitude); },
+          function(){ toast(t('errGps')); },
+          {enableHighAccuracy:false,timeout:20000,maximumAge:60000}); },
       {enableHighAccuracy:true,timeout:15000,maximumAge:0});
   }
 
@@ -956,7 +1040,62 @@ const fbDb = getFirestore(fbApp);
   nameInput.addEventListener('input',refreshStart);
   $('codeInput').addEventListener('input',refreshStart);
 
-  function gotoMap(){ $('welcome').classList.remove('active'); $('onboard').classList.remove('active'); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+  function gotoMap(){ ['welcome','onboard','adminlogin'].forEach(function(s){$(s).classList.remove('active');}); $('mapscreen').classList.add('active'); setTimeout(enterMap,120); }
+
+  /* ===== Admin email login (stable identity across devices) ===== */
+  function goOnboardCreate(){
+    ['welcome','adminlogin'].forEach(function(s){$(s).classList.remove('active');});
+    $('onboard').classList.add('active');
+    state_action='create';
+    document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='create');});
+    $('joinFields').style.display='none';
+    refreshStart(); try{ nameInput.focus(); }catch(e){}
+  }
+  async function loadMyAdminGroup(){
+    try{
+      var ex=await getDocs(query(collection(fbDb,'groups'),where('adminId','==',G.uid)));
+      if(!ex.empty){
+        var ed=ex.docs[0]; G.groupId=ed.id; G.code=ed.data().code||'';
+        state.role='Admin';
+        if(!state.name){ try{state.name=localStorage.getItem('sg_name')||'';}catch(e){} if(!state.name)state.name=ed.data().name||'Admin'; }
+        if(!state.mode)state.mode='Team';
+        await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
+        saveLocal(); gotoMap();
+      } else { goOnboardCreate(); }
+    }catch(e){ goOnboardCreate(); }
+  }
+  async function enterAsAdmin(){
+    var u=fbAuth.currentUser; if(!u)return;
+    G.uid=u.uid; G.ready=true; G.email=u.email||null; booted=true;
+    clearLocal();              // explicit admin login overrides any stale member context on this device
+    await loadMyAdminGroup();
+  }
+  async function adminSignIn(){
+    var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
+    if(!em||!pw){ toast(t('loginErr')); return; }
+    $('loginSignIn').disabled=true;
+    try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
+    catch(e){ toast(t('loginErr')); }
+    $('loginSignIn').disabled=false;
+  }
+  async function adminSignUp(){
+    var em=$('loginEmail').value.trim(), pw=$('loginPass').value;
+    if(!em||pw.length<6){ toast(t('signupErr')); return; }
+    $('loginSignUp').disabled=true;
+    try{
+      var cur=fbAuth.currentUser;
+      if(cur && cur.isAnonymous){ await linkWithCredential(cur, EmailAuthProvider.credential(em,pw)); }
+      else { await createUserWithEmailAndPassword(fbAuth,em,pw); }
+      await enterAsAdmin();
+    }catch(e){
+      try{ await signInWithEmailAndPassword(fbAuth,em,pw); await enterAsAdmin(); }
+      catch(e2){ toast(t('signupErr')); }
+    }
+    $('loginSignUp').disabled=false;
+  }
+  $('loginSignIn').addEventListener('click',adminSignIn);
+  $('loginSignUp').addEventListener('click',adminSignUp);
+  async function doLogout(){ try{ await signOut(fbAuth); }catch(e){} clearLocal(); location.reload(); }
 
   async function doStart(){
     if(!G.ready||!G.uid){ toast(t('connecting')); return; }
@@ -1004,13 +1143,17 @@ const fbDb = getFirestore(fbApp);
   }
 
   // Firebase auth + resume saved group / deep link
-  signInAnonymously(fbAuth).catch(function(){});
   onAuthStateChanged(fbAuth,function(user){
-    if(!user)return; G.uid=user.uid; G.ready=true;
+    if(!user){ if(!booted) signInAnonymously(fbAuth).catch(function(){}); return; }
+    G.uid=user.uid; G.ready=true; G.email=user.isAnonymous?null:(user.email||null);
+    if(booted){ if($('mapscreen').classList.contains('active')) refreshMap(); return; }
+    booted=true;
     var g=null; try{g=localStorage.getItem('sg_group');}catch(e){}
     if(g){
       try{ state.name=localStorage.getItem('sg_name')||''; state.role=localStorage.getItem('sg_role')||'Member'; state.mode=localStorage.getItem('sg_mode')||'Team'; G.groupId=g; G.code=localStorage.getItem('sg_code')||''; }catch(e){}
       gotoMap();
+    } else if(G.email){
+      loadMyAdminGroup();
     } else if(applyDeepLink()){
       $('welcome').classList.remove('active'); $('onboard').classList.add('active');
       try{ nameInput.focus(); }catch(e){}
