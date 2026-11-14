@@ -88,6 +88,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .btn:active:not(:disabled){transform:translateY(1px);}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none;}
 .btn-link{width:100%;margin-top:14px;background:transparent;border:none;color:var(--rose,#ff7a9c);font-size:14px;font-weight:700;cursor:pointer;padding:8px;}
+.wc-link{color:var(--ink-faint);font-size:12.5px;font-weight:600;text-decoration:none;}
 .btn-row{display:flex;gap:10px;}
 .btn-row .btn{margin-top:22px;}
 .acct-row{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--navy-800);display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -268,6 +269,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="wc-foot">
       <button id="welcomeBtn" class="btn" style="margin-top:0;" data-i18n="getStarted"></button>
       <button id="adminLoginBtn" class="btn-link" data-i18n="adminLoginBtn"></button>
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:4px;">
+        <a href="guide.html" class="wc-link" data-i18n="howToUse"></a>
+        <a href="https://www.facebook.com/profile.php?id=61596429292499" target="_blank" rel="noopener" class="wc-link">SetupGo ↗</a>
+      </div>
       <div class="legal" data-i18n-html="legal"></div>
     </div>
   </section>
@@ -294,6 +299,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <button id="loginSignIn" class="btn" data-i18n="btnSignIn"></button>
       <button id="loginSignUp" class="btn ghost" data-i18n="btnSignUp"></button>
     </div>
+    <button id="loginForgot" class="btn-link" data-i18n="forgotPw" style="margin-top:6px;"></button>
     <button id="loginBack" class="btn-link" data-i18n="loginBack"></button>
     <div class="legal" data-i18n="loginHint" style="margin-top:4px;"></div>
   </section>
@@ -416,7 +422,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, linkWithCredential, EmailAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, linkWithCredential, EmailAuthProvider, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -439,12 +445,12 @@ const fbDb = getFirestore(fbApp);
     fil:{
       tagline:"Consent-based location sharing",
       hero:"Alam mo kung nasaan<br>ang <em>importante sa'yo</em>",
-      heroSub:"Bawat miyembro mismo ang pumapayag na mag-share. Transparent, ligtas, at ikaw ang may kontrol.",
-      n1t:"Consent-based", n1d:"Ikaw mismo ang pumipili na mag-share — hindi palihim.",
-      n2t:"Laging malinaw", n2d:"Makikita mo kung kailan ka nagsa-share ng lokasyon.",
-      n3t:"Ikaw ang may kontrol", n3d:"Isang pindot lang para itigil ang sharing anumang oras.",
-      getStarted:"Magsimula →",
-      legal:"Sa pagpindot, sumasang-ayon ka sa consent-based sharing.<br>Para magkakita ang mga phone, buksan ang parehong link na naka-sign in.",
+      heroSub:"Ligtas na location sharing para sa pamilya at team.",
+      n1t:"Consent-based", n1d:"Ikaw ang pumipili — hindi palihim.",
+      n2t:"Laging malinaw", n2d:"Alam mo kung kailan ka naka-share.",
+      n3t:"Ikaw ang kontrol", n3d:"Isang pindot para itigil.",
+      getStarted:"Magsimula →", howToUse:"📖 Paano gamitin?",
+      legal:"Sa pagpindot, sumasang-ayon ka sa consent-based sharing.",
       setupSub:"I-setup ang profile mo",
       qName:"Ano ang pangalan mo?", namePh:"hal. Fernando",
       qRole:"Ano ang role mo?",
@@ -488,17 +494,18 @@ const fbDb = getFirestore(fbApp);
       btnSignIn:"Mag-login", btnSignUp:"Gumawa ng account", loginBack:"← Bumalik",
       loginHint:"Members: hindi n'yo kailangan ito — gamitin lang ang invite link mula sa admin.",
       loginErr:"Maling email o password", signupErr:"Hindi magawa ang account — baka ginamit na ang email o maikli ang password",
-      secureEmail:"🔒 I-secure sa email", secureHint:"para admin ka sa lahat ng device", adminAs:"Admin:", logoutBtn:"Mag-logout"
+      secureEmail:"🔒 I-secure sa email", secureHint:"para admin ka sa lahat ng device", adminAs:"Admin:", logoutBtn:"Mag-logout",
+      forgotPw:"Nakalimutan ang password?", needEmail:"Ilagay muna ang email mo sa taas", resetSent:"Padala na ang reset link sa email mo — i-check ang inbox (at spam)", resetErr:"Hindi mahanap ang email na ito"
     },
     en:{
       tagline:"Consent-based location sharing",
       hero:"Know where the people<br>who <em>matter to you</em> are",
-      heroSub:"Every member chooses to share. Transparent, safe, and you stay in control.",
-      n1t:"Consent-based", n1d:"You choose to share — never in secret.",
-      n2t:"Always clear", n2d:"You can see whenever you're sharing your location.",
-      n3t:"You're in control", n3d:"One tap to stop sharing anytime.",
-      getStarted:"Get started →",
-      legal:"By continuing, you agree to consent-based sharing.<br>For phones to see each other, open the same link while signed in.",
+      heroSub:"Safe location sharing for family and team.",
+      n1t:"Consent-based", n1d:"You choose — never in secret.",
+      n2t:"Always clear", n2d:"You see when you're sharing.",
+      n3t:"You're in control", n3d:"One tap to stop.",
+      getStarted:"Get started →", howToUse:"📖 How to use?",
+      legal:"By continuing, you agree to consent-based sharing.",
       setupSub:"Set up your profile",
       qName:"What's your name?", namePh:"e.g. Fernando",
       qRole:"What's your role?",
@@ -542,7 +549,8 @@ const fbDb = getFirestore(fbApp);
       btnSignIn:"Log in", btnSignUp:"Create account", loginBack:"← Back",
       loginHint:"Members: you don't need this — just use the invite link from the admin.",
       loginErr:"Wrong email or password", signupErr:"Couldn't create the account — email may be in use or the password is too short",
-      secureEmail:"🔒 Secure with email", secureHint:"to be admin on all devices", adminAs:"Admin:", logoutBtn:"Log out"
+      secureEmail:"🔒 Secure with email", secureHint:"to be admin on all devices", adminAs:"Admin:", logoutBtn:"Log out",
+      forgotPw:"Forgot your password?", needEmail:"Enter your email above first", resetSent:"Reset link sent to your email — check your inbox (and spam)", resetErr:"Can't find that email"
     }
   };
 
@@ -1108,8 +1116,15 @@ const fbDb = getFirestore(fbApp);
     }
     $('loginSignUp').disabled=false;
   }
+  async function adminReset(){
+    var em=$('loginEmail').value.trim();
+    if(!em){ toast(t('needEmail')); return; }
+    try{ await sendPasswordResetEmail(fbAuth,em); toast(t('resetSent')); }
+    catch(e){ toast(t('resetErr')); }
+  }
   $('loginSignIn').addEventListener('click',adminSignIn);
   $('loginSignUp').addEventListener('click',adminSignUp);
+  $('loginForgot').addEventListener('click',adminReset);
   async function doLogout(){ try{ await signOut(fbAuth); }catch(e){} clearLocal(); location.reload(); }
 
   async function doStart(){

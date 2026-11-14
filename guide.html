@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paano Gamitin — SetupGo Locate</title>
+<style>
+  :root{
+    --navy-900:#090f22; --navy-800:#0f1733; --navy-700:#16203f; --line:rgba(255,255,255,.1);
+    --ink:#eef2ff; --ink-dim:#aeb6d4; --ink-faint:#6f7aa3;
+    --rose:#ff4f7b; --amber:#ffb547; --grad:linear-gradient(135deg,#f43f5e,#f59e0b);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--navy-900);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px;}
+  header{text-align:center;padding:40px 0 26px;background:radial-gradient(700px 400px at 80% -20%,rgba(244,63,94,.22),transparent 60%),var(--navy-900);}
+  .logo{width:52px;height:52px;border-radius:15px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative;box-shadow:0 10px 26px -8px rgba(244,63,94,.5);}
+  .logo span{font-size:28px;font-weight:900;color:#fff;}
+  .logo::after{content:"";position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:#fff;}
+  .brand{font-size:19px;}.brand b{font-weight:800;}
+  h1{font-size:25px;font-weight:900;margin-top:8px;letter-spacing:-.3px;}
+  .tag{color:var(--ink-dim);font-size:14px;margin-top:4px;}
+  section{padding:26px 0;border-top:1px solid var(--line);}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--rose);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .eyebrow .pill{background:var(--grad);color:#fff;padding:4px 10px;border-radius:999px;letter-spacing:.4px;}
+  h2{font-size:19px;font-weight:800;margin-bottom:12px;}
+  .steps{display:flex;flex-direction:column;gap:11px;}
+  .step{display:flex;gap:13px;background:var(--navy-800);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+  .step .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--grad);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .step h4{font-size:14.5px;font-weight:800;margin-bottom:2px;}
+  .step p{font-size:13.5px;color:var(--ink-dim);}
+  .step p b{color:var(--ink);}
+  .note{background:var(--navy-800);border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:12px;padding:13px 15px;font-size:13.5px;color:var(--ink-dim);margin-top:14px;}
+  .note b{color:var(--ink);}
+  .faq{background:var(--navy-800);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+  .faq h4{font-size:14px;font-weight:800;margin-bottom:4px;}
+  .faq p{font-size:13.5px;color:var(--ink-dim);}
+  footer{text-align:center;padding:30px 0 40px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:12.5px;}
+  footer a{color:var(--rose);text-decoration:none;font-weight:700;}
+  .back{display:inline-block;margin-top:18px;padding:12px 24px;border-radius:13px;background:var(--grad);color:#fff;font-weight:800;font-size:14px;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo"><span>S</span></div>
+    <div class="brand"><b>SetupGo</b> Locate</div>
+    <h1>Paano Gamitin</h1>
+    <div class="tag">Simpleng gabay para sa Family at Team monitoring</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- MEMBER -->
+  <section>
+    <div class="eyebrow"><span class="pill">MEMBER</span> Kung na-invite ka</div>
+    <h2>Sumali sa grupo (pamilya o team)</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h4>Buksan ang invite link</h4><p>I-tap ang link na ipinadala ng admin. Awtomatiko kang isasali sa tamang grupo (Family o Team).</p></div></div>
+      <div class="step"><div class="n">2</div><div><h4>Ilagay ang pangalan</h4><p>Gamitin ang pangalan mo + <b>inisyal ng apelyido</b> (hal. "Maria S.") para madali kang makilala.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h4>Payagan ang location</h4><p>Pindutin ang <b>Allow</b> at i-ON ang <b>Precise</b>. Dito ka makikita sa mapa.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h4>I-ON ang sharing</h4><p>Siguraduhing naka-ON ang toggle na "Nagsa-share ka ng lokasyon." Isang pindot para itigil anumang oras.</p></div></div>
+    </div>
+    <div class="note">💡 Panatilihing <b>bukas ang app sa screen</b> kapag gusto mong makita ka — humihinto ang GPS kapag naka-lock o naka-background ang phone.</div>
+  </section>
+
+  <!-- ADMIN -->
+  <section>
+    <div class="eyebrow"><span class="pill">ADMIN</span> Kung ikaw ang namamahala</div>
+    <h2>I-setup at i-invite ang grupo</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div><h4>Gumawa ng admin account</h4><p>Sa welcome screen, i-tap <b>"May admin account? Mag-login"</b> → gumawa ng account gamit ang email. Ikaw ay admin sa <b>lahat ng device</b> (PC at phone).</p></div></div>
+      <div class="step"><div class="n">2</div><div><h4>I-invite ang pamilya o team</h4><p>Pindutin ang <b>"📨 Imbita sa Pamilya"</b> o <b>"📨 Imbita sa Team"</b> at ibahagi ang link. Awtomatiko silang mapupunta sa tamang grupo.</p></div></div>
+      <div class="step"><div class="n">3</div><div><h4>Monitor sa iisang mapa</h4><p>Nakikita mo ang <b>lahat</b> ng miyembro. I-filter sa <b>Lahat / Pamilya / Team</b>. I-tap ang pangalan para makita ang eksaktong lokasyon at distansya.</p></div></div>
+      <div class="step"><div class="n">4</div><div><h4>Mga Lugar at SOS</h4><p>Magdagdag ng <b>Mga Lugar</b> (bahay, opisina, site) para malaman kung sino ang naroon. Gamitin ang <b>SOS</b> sakaling may emergency.</p></div></div>
+    </div>
+    <div class="note">🔑 Pwede kang mag-manage ng member: i-tap ang <b>✕</b> para alisin, o ang tag na <b>Pamilya/Team ⇄</b> para ilipat sila ng grupo. Pindutin ang <b>"Makikita ako ng: Pamilya / Team"</b> kung gusto mong makita ka rin ng mga member.</div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section>
+    <div class="eyebrow">🛡️ Privacy at Kaligtasan</div>
+    <div class="faq"><h4>Palihim ba itong tracking?</h4><p>Hindi. <b>Consent-based</b> ito — ikaw mismo ang pumipili na mag-share, at makikita mo kung kailan ka naka-share. Pwede mong i-pause anumang oras.</p></div>
+    <div class="faq"><h4>Sino ang nakakakita sa akin?</h4><p>Ang mga member ay magkikita lang sa isa't isa (peer-to-peer). Ang admin ang pumipili kung sino ang makakakita sa kanya.</p></div>
+    <div class="faq"><h4>Bakit walang lokasyon ang isang member?</h4><p>Naka-ON ang sharing nila pero wala pang GPS fix. Kailangan nilang payagan ang location at buksan ang app sa screen. Lalabas ang "⏳ GPS…" habang hinihintay.</p></div>
+  </section>
+
+  <!-- TROUBLESHOOT -->
+  <section>
+    <div class="eyebrow">🔧 Kung may problema</div>
+    <div class="faq"><h4>Hindi lumalabas ang member</h4><p>Siguraduhing <b>iisang grupo</b> kayo (parehong invite code). I-reload ang app sa parehong phone.</p></div>
+    <div class="faq"><h4>Mali o walang lokasyon</h4><p>I-reload ang app pagkatapos payagan ang location, tapos pindutin ang <b>◎ recenter</b> at hintayin ang "Nakita ang iyong lokasyon ✓".</p></div>
+    <div class="faq"><h4>Nakalimutan ang password (admin)</h4><p>Sa login screen, ilagay ang email → i-tap ang <b>"Nakalimutan ang password?"</b> → i-check ang email para sa reset link.</p></div>
+  </section>
+
+  <div style="text-align:center;padding:10px 0 4px;">
+    <a href="index.html" class="back">← Balik sa App</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div><b>SetupGo</b> Digital Design Services</div>
+    <div style="margin-top:4px;">May tanong? <a href="https://www.facebook.com/profile.php?id=61596429292499" target="_blank" rel="noopener">Message us sa Facebook ↗</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
