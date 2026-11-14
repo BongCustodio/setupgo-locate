@@ -886,6 +886,7 @@ const fbDb = getFirestore(fbApp);
     var list=currentList(center);
     recordHistory(list);
     computePlaces(list);
+    declumpPins(list);
     var sel=state.selected?list.filter(function(m){return m.id===state.selected;})[0]:null;
     MM.setGeofences(state.places);
     MM.setTrail(sel?trailPoints(sel):null);
@@ -895,6 +896,24 @@ const fbDb = getFirestore(fbApp);
     renderSosBanner(list);
     renderSelBar(sel,center);
     renderDebug();
+  }
+  // Fan out pins that sit on (almost) the same spot, so co-located people don't hide under each other
+  function declumpPins(list){
+    var EPS=0.00020, R=0.00016;   // ~22m match radius, ~17m spread
+    var placed=[];
+    if(state.sharing&&state.youLatLng) placed.push({lat:state.youLatLng.lat,lng:state.youLatLng.lng}); // keep "you" fixed
+    list.forEach(function(m){
+      if(!m._ll) return;
+      var lat=m._ll[0], lng=m._ll[1];
+      var clump=placed.filter(function(p){return Math.abs(p.lat-lat)<EPS && Math.abs(p.lng-lng)<EPS;}).length;
+      if(clump>0){
+        var ang=clump*2.399963;   // golden angle → even fan
+        lat=lat+R*Math.sin(ang);
+        lng=lng+R*Math.cos(ang)/Math.max(0.2,Math.cos(lat*Math.PI/180));
+        m._ll=[lat,lng]; m._nudged=true;
+      }
+      placed.push({lat:lat,lng:lng});
+    });
   }
   function renderDebug(){
     var el=$('dbg'); if(!el)return;
