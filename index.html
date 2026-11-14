@@ -439,7 +439,7 @@ const fbDb = getFirestore(fbApp);
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
-      qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit",
+      qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit", nameTaken:"Ginamit na ang pangalang ito sa grupo — magdagdag ng initial ng apelyido (hal. Fernando C.)",
       invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
       inviteFam:"📨 Imbita sa Pamilya", inviteTeam:"📨 Imbita sa Team", joiningLabel:"Sasali ka sa grupong:",
       leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
@@ -486,7 +486,7 @@ const fbDb = getFirestore(fbApp);
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
-      qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again",
+      qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again", nameTaken:"That name is already used — add a surname initial (e.g. Fernando C.)",
       invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
       inviteFam:"📨 Invite to Family", inviteTeam:"📨 Invite to Team", joiningLabel:"You'll join:",
       leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
@@ -975,6 +975,10 @@ const fbDb = getFirestore(fbApp);
         if(qs.empty){ toast(t('badCode')); startBtn.disabled=false; return; }
         var gd=qs.docs[0]; G.groupId=gd.id; G.code=ic;
         state.role=(gd.data().adminId===G.uid)?'Admin':'Member';   // original admin rejoins as Admin
+        var msnap=await getDocs(collection(fbDb,'groups',G.groupId,'members'));
+        var nmlc=state.name.trim().toLowerCase(), clash=false;
+        msnap.forEach(function(d){ if(d.id!==G.uid && ((d.data().name||'').trim().toLowerCase()===nmlc)) clash=true; });
+        if(clash){ toast(t('nameTaken')); startBtn.disabled=false; return; }
       }
       await setDoc(doc(fbDb,'groups',G.groupId,'members',G.uid), myMemberDoc(), {merge:true});
       saveLocal(); gotoMap();
