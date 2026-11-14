@@ -118,8 +118,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .sosbtn{position:absolute;right:16px;bottom:238px;z-index:10;width:48px;height:48px;border-radius:14px;background:#ef4444;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(239,68,68,.6);letter-spacing:.5px;}
 .sosbtn.on{animation:sospulse 1s infinite;}
 .sosbtn:active{transform:scale(.95);}
-.sosalert{position:absolute;left:12px;right:12px;top:calc(72px + env(safe-area-inset-top));z-index:15;background:#ef4444;color:#fff;border-radius:14px;padding:12px 15px;font-size:13.5px;font-weight:700;box-shadow:var(--shadow);display:none;align-items:center;gap:9px;}
+.sosalert{position:absolute;left:12px;right:12px;top:calc(70px + env(safe-area-inset-top));z-index:25;background:#ef4444;color:#fff;border-radius:16px;padding:14px 16px;font-size:15px;font-weight:800;box-shadow:0 12px 32px -6px rgba(239,68,68,.75);display:none;align-items:center;gap:11px;cursor:pointer;animation:sosflash 1s infinite;}
 .sosalert.show{display:flex;}
+.sosalert .sos-ic{font-size:21px;line-height:1;}
+@keyframes sosflash{0%,100%{background:#ef4444;}50%{background:#b91c1c;box-shadow:0 12px 40px -4px rgba(239,68,68,1);}}
 
 .places{margin-bottom:12px;}
 .places-head{display:flex;align-items:center;justify-content:space-between;margin:0 4px 9px;}
@@ -201,6 +203,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .member .info{flex:1;min-width:0;}
 .member .info .nm{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:7px;}
 .tag{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--grad-soft);color:var(--ink);border:1px solid rgba(244,63,94,.3);}
+.tag-btn{cursor:pointer;border:1px solid rgba(244,63,94,.55);}
 .member .info .meta{font-size:12px;color:var(--ink-dim);margin-top:2px;}
 .member .dist{font-size:12.5px;color:var(--ink-dim);text-align:right;white-space:nowrap;}
 .member .dist b{color:var(--ink);font-size:14px;}
@@ -228,6 +231,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .members{flex:1;}
   .recenter{bottom:auto;top:96px;right:436px;}
   .connbadge{bottom:20px;}
+  .sosalert{left:18px;right:432px;top:88px;}
 }
 @media(min-width:1200px){.sheet{width:440px;}.recenter{right:476px;}}
 </style>
@@ -432,7 +436,7 @@ const fbDb = getFirestore(fbApp);
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
       qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit",
-      invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", codeCopied:"Nakopya ang code ✓",
+      invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
       leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
     },
     en:{
@@ -478,7 +482,7 @@ const fbDb = getFirestore(fbApp);
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
       qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again",
-      invite:"Invite code — share with team/family", copyCode:"Copy", codeCopied:"Code copied ✓",
+      invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
       leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
     }
   };
@@ -655,7 +659,7 @@ const fbDb = getFirestore(fbApp);
     $('connBadge').classList.toggle('live',state.live);
     $('connTxt').textContent=state.live?t('LIVE'):t('DEMO');
     var inv=$('inviteBar');
-    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('copyCodeBtn').textContent=t('copyCode'); }
+    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('copyCodeBtn').textContent=t('shareBtn'); }
     else { inv.style.display='none'; }
     $('leaveBtn').textContent=t('leaveGroup');
     draw();
@@ -699,11 +703,15 @@ const fbDb = getFirestore(fbApp);
       var sc=m.status==='on'?'':(m.status==='idle'?'idle':'offl');
       var dist=m._ll?('<b>'+haversine(center||FALLBACK,m._ll)+'</b>'+(m.role?'<br>'+m.role:'')):(m.status==='offl'?'<span class="faint">'+t('offline')+'</span>':(m.role||'—'));
       var xbtn=state.role==='Admin'?'<button class="mem-x" data-rm="1">✕</button>':'';
+      var tagHtml=(state.role==='Admin'&&m.role)?' <button class="tag tag-btn">'+groupLabel(m.role)+' ⇄</button>':(m.tag?' <span class="tag">'+m.tag+'</span>':'');
       el.innerHTML='<div class="av" style="background:'+m.color+'">'+initials(m.name)+'<div class="on '+sc+'"></div></div>'+
-        '<div class="info"><div class="nm">'+m.name+(m.tag?' <span class="tag">'+m.tag+'</span>':'')+'</div>'+
+        '<div class="info"><div class="nm">'+m.name+tagHtml+'</div>'+
         '<div class="meta">'+m.metaText+'</div></div><div class="dist">'+dist+'</div>'+xbtn;
       el.addEventListener('click',function(){if(m._ll){selectMember(m.id);}});
-      if(state.role==='Admin'){ var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); }); }
+      if(state.role==='Admin'){
+        var xb=el.querySelector('.mem-x'); if(xb) xb.addEventListener('click',function(e){e.stopPropagation(); if(confirm(t('removeQ')+m.name+'?')) removeMember(m.id); });
+        var gb=el.querySelector('.tag-btn'); if(gb) gb.addEventListener('click',function(e){e.stopPropagation(); setMemberGroup(m.id, m.role==='Family'?'Team':'Family'); });
+      }
       wrap.appendChild(el);
     });
   }
@@ -749,11 +757,15 @@ const fbDb = getFirestore(fbApp);
     });
   }
   function renderSosBanner(list){
-    var names=[]; if(state.sos) names.push(state.name||'—');
-    list.forEach(function(m){ if(m.sos) names.push(m.name); });
+    var names=[],who=null;
+    if(state.sos) names.push(state.name||'—');
+    list.forEach(function(m){ if(m.sos){ names.push(m.name); if(!who&&m._ll) who=m; } });
     var el=$('sosAlert');
-    if(names.length){ el.classList.add('show'); el.textContent='⚠️ '+names.join(', ')+' — '+t('needsHelp'); }
-    else { el.classList.remove('show'); el.textContent=''; }
+    if(names.length){
+      el.classList.add('show');
+      el.innerHTML='<span class="sos-ic">🚨</span><span>'+names.join(', ')+' — '+t('needsHelp')+'</span>';
+      el.onclick=function(){ if(who){ MM.setView(who._ll[0],who._ll[1],16); selectMember(who.id); } };
+    } else { el.classList.remove('show'); el.innerHTML=''; el.onclick=null; }
     $('sosBtn').classList.toggle('on',state.sos);
   }
   function pushHist(id,lat,lng){
@@ -828,6 +840,7 @@ const fbDb = getFirestore(fbApp);
   }
   function kicked(){ clearLocal(); if(G.unsub)G.unsub(); if(G.gunsub)G.gunsub(); toast(t('removed')); setTimeout(function(){location.reload();},1400); }
   async function removeMember(uid){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',uid)); }catch(e){} }
+  async function setMemberGroup(uid,g){ try{ await updateDoc(doc(fbDb,'groups',G.groupId,'members',uid),{group:g}); }catch(e){} }
   async function leaveGroup(){ try{ await deleteDoc(doc(fbDb,'groups',G.groupId,'members',G.uid)); }catch(e){} clearLocal(); location.reload(); }
   async function savePlaces(){ try{ await updateDoc(doc(fbDb,'groups',G.groupId),{places:state.places}); }catch(e){} }
   var geoWatch=null;
@@ -882,7 +895,13 @@ const fbDb = getFirestore(fbApp);
     });
     $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
 
-    $('copyCodeBtn').addEventListener('click',function(){ try{navigator.clipboard.writeText(G.code||'');}catch(e){} toast(t('codeCopied')); });
+    $('copyCodeBtn').addEventListener('click',function(){
+      var link=location.origin+location.pathname+'?code='+(G.code||'');
+      var msg=(state.lang==='fil'?'Sumali sa SetupGo Locate group ko! I-tap ang link para magkakita tayo sa map: ':'Join my SetupGo Locate group! Tap the link to share location on the map: ')+link;
+      try{ if(navigator.share){ navigator.share({title:'SetupGo Locate',text:msg}); return; } }catch(e){}
+      try{ navigator.clipboard.writeText(msg); }catch(e){}
+      toast(t('codeCopied'));
+    });
     $('leaveBtn').addEventListener('click',function(){ if(confirm(t('leaveGroup')+'?')) leaveGroup(); });
     document.querySelectorAll('#filterTabs button').forEach(function(b){ b.addEventListener('click',function(){ state.filter=b.dataset.filter; refreshMap(); }); });
     document.querySelectorAll('#showToRow .st-chips button').forEach(function(b){ b.addEventListener('click',function(){ var g=b.dataset.st,i=state.showTo.indexOf(g); if(i>=0)state.showTo.splice(i,1); else state.showTo.push(g); writeMyDoc(true); refreshMap(); }); });
@@ -951,7 +970,18 @@ const fbDb = getFirestore(fbApp);
   }
   startBtn.addEventListener('click',doStart);
 
-  // Firebase auth + resume saved group
+  function applyDeepLink(){
+    var pc=null; try{pc=new URLSearchParams(location.search).get('code');}catch(e){}
+    if(!pc) return false;
+    state_action='join';
+    document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='join');});
+    $('joinFields').style.display='';
+    $('codeInput').value=pc.toUpperCase();
+    refreshStart();
+    return true;
+  }
+
+  // Firebase auth + resume saved group / deep link
   signInAnonymously(fbAuth).catch(function(){});
   onAuthStateChanged(fbAuth,function(user){
     if(!user)return; G.uid=user.uid; G.ready=true;
@@ -959,6 +989,9 @@ const fbDb = getFirestore(fbApp);
     if(g){
       try{ state.name=localStorage.getItem('sg_name')||''; state.role=localStorage.getItem('sg_role')||'Member'; state.mode=localStorage.getItem('sg_mode')||'Team'; G.groupId=g; G.code=localStorage.getItem('sg_code')||''; }catch(e){}
       gotoMap();
+    } else if(applyDeepLink()){
+      $('welcome').classList.remove('active'); $('onboard').classList.add('active');
+      try{ nameInput.focus(); }catch(e){}
     }
   });
 
