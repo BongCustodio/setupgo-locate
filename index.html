@@ -133,11 +133,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .place-chip .pc{font-size:11.5px;color:var(--ink-dim);margin-top:3px;}
 .place-chip .pc b{color:var(--green);}
 .places-empty{font-size:12px;color:var(--ink-faint);padding:4px 6px 2px;line-height:1.5;}
-.invitebar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:var(--navy-700);border:1px dashed rgba(244,63,94,.5);margin-bottom:12px;}
-.invitebar .inv-l{flex:1;min-width:0;}
+.invitebar{display:flex;flex-direction:column;gap:11px;padding:13px 14px;border-radius:16px;background:var(--navy-700);border:1px dashed rgba(244,63,94,.5);margin-bottom:12px;}
 .invitebar .inv-k{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-faint);font-weight:700;}
 .invitebar .inv-code{font-size:22px;font-weight:800;letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:2px;}
-.inv-copy{border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:12px;cursor:pointer;flex:none;}
+.inv-share{display:flex;gap:9px;}
+.inv-sbtn{flex:1;border:none;background:var(--grad);color:#fff;font-weight:700;font-size:12.5px;padding:11px 8px;border-radius:12px;cursor:pointer;}
 .mem-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-600);color:var(--ink-dim);font-size:14px;cursor:pointer;flex:none;margin-left:4px;}
 .leave-btn{margin-top:14px;width:100%;padding:13px;border-radius:14px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;font-weight:700;font-size:13.5px;cursor:pointer;}
 .filtertabs{display:flex;gap:6px;background:var(--navy-700);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px;}
@@ -286,12 +286,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <label class="label" data-i18n="qCode"></label>
         <input id="codeInput" class="input" data-i18n-ph="codePh" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px;" />
       </div>
-      <div class="field">
+      <div class="field" id="modeField">
         <label class="label" data-i18n="qMode"></label>
         <div class="modes">
           <div class="mode" data-mode="Family"><div class="ic">👨‍👩‍👧‍👦</div><h3 data-i18n="modeFamilyT"></h3><p data-i18n="modeFamilyD"></p></div>
           <div class="mode sel" data-mode="Team"><div class="ic">👷</div><h3 data-i18n="modeTeamT"></h3><p data-i18n="modeTeamD"></p></div>
         </div>
+      </div>
+      <div class="field" id="modeLocked" style="display:none;">
+        <label class="label" data-i18n="joiningLabel"></label>
+        <div class="rolelock"><span class="ic" id="modeLockIc">👥</span><span id="modeLockText"></span></div>
       </div>
     </div>
     <div class="consent">
@@ -326,8 +330,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="sheet-body" id="sheetBody">
         <div class="rolebanner" id="roleBanner"><span class="ic">🛡️</span><span id="roleBannerTxt"></span></div>
         <div class="invitebar" id="inviteBar" style="display:none;">
-          <div class="inv-l"><div class="inv-k" id="inviteLabel"></div><div class="inv-code" id="inviteCode">——————</div></div>
-          <button class="inv-copy" id="copyCodeBtn"></button>
+          <div class="inv-top"><div class="inv-k" id="inviteLabel"></div><div class="inv-code" id="inviteCode">——————</div></div>
+          <div class="inv-share"><button class="inv-sbtn" id="shareFam"></button><button class="inv-sbtn" id="shareTeam"></button></div>
         </div>
         <div class="showto" id="showToRow" style="display:none;">
           <span class="st-k" id="showToLabel"></span>
@@ -437,6 +441,7 @@ const fbDb = getFirestore(fbApp);
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
       qCode:"Invite code", codePh:"hal. ABC123", badCode:"Maling code — subukan ulit", connecting:"Kumokonekta…", errJoin:"May problema — subukan ulit",
       invite:"Invite code — ibahagi sa team/pamilya", copyCode:"Kopyahin", shareBtn:"Ibahagi", codeCopied:"Nakopya ang invite link ✓",
+      inviteFam:"📨 Imbita sa Pamilya", inviteTeam:"📨 Imbita sa Team", joiningLabel:"Sasali ka sa grupong:",
       leaveGroup:"Lumabas sa grupo", removeQ:"Alisin si ", removed:"Inalis ka sa grupo", filterAll:"Lahat", showToLabel:"Makikita ako ng:"
     },
     en:{
@@ -483,6 +488,7 @@ const fbDb = getFirestore(fbApp);
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
       qCode:"Invite code", codePh:"e.g. ABC123", badCode:"Wrong code — try again", connecting:"Connecting…", errJoin:"Something went wrong — try again",
       invite:"Invite code — share with team/family", copyCode:"Copy", shareBtn:"Share", codeCopied:"Invite link copied ✓",
+      inviteFam:"📨 Invite to Family", inviteTeam:"📨 Invite to Team", joiningLabel:"You'll join:",
       leaveGroup:"Leave group", removeQ:"Remove ", removed:"You were removed from the group", filterAll:"All", showToLabel:"Who can see me:"
     }
   };
@@ -659,7 +665,7 @@ const fbDb = getFirestore(fbApp);
     $('connBadge').classList.toggle('live',state.live);
     $('connTxt').textContent=state.live?t('LIVE'):t('DEMO');
     var inv=$('inviteBar');
-    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('copyCodeBtn').textContent=t('shareBtn'); }
+    if(state.role==='Admin'){ inv.style.display=''; $('inviteLabel').textContent=t('invite'); $('inviteCode').textContent=G.code||'——————'; $('shareFam').textContent=t('inviteFam'); $('shareTeam').textContent=t('inviteTeam'); }
     else { inv.style.display='none'; }
     $('leaveBtn').textContent=t('leaveGroup');
     draw();
@@ -895,13 +901,16 @@ const fbDb = getFirestore(fbApp);
     });
     $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
 
-    $('copyCodeBtn').addEventListener('click',function(){
-      var link=location.origin+location.pathname+'?code='+(G.code||'');
-      var msg=(state.lang==='fil'?'Sumali sa SetupGo Locate group ko! I-tap ang link para magkakita tayo sa map: ':'Join my SetupGo Locate group! Tap the link to share location on the map: ')+link;
+    function shareInvite(group){
+      var link=location.origin+location.pathname+'?code='+(G.code||'')+'&g='+group;
+      var gl=(state.lang==='fil'?(group==='Family'?'Pamilya':'Team'):group);
+      var msg=(state.lang==='fil'?('Sumali sa SetupGo Locate ('+gl+') group ko! I-tap ang link para magkakita tayo sa map: '):('Join my SetupGo Locate ('+gl+') group! Tap the link to share location on the map: '))+link;
       try{ if(navigator.share){ navigator.share({title:'SetupGo Locate',text:msg}); return; } }catch(e){}
       try{ navigator.clipboard.writeText(msg); }catch(e){}
       toast(t('codeCopied'));
-    });
+    }
+    $('shareFam').addEventListener('click',function(){ shareInvite('Family'); });
+    $('shareTeam').addEventListener('click',function(){ shareInvite('Team'); });
     $('leaveBtn').addEventListener('click',function(){ if(confirm(t('leaveGroup')+'?')) leaveGroup(); });
     document.querySelectorAll('#filterTabs button').forEach(function(b){ b.addEventListener('click',function(){ state.filter=b.dataset.filter; refreshMap(); }); });
     document.querySelectorAll('#showToRow .st-chips button').forEach(function(b){ b.addEventListener('click',function(){ var g=b.dataset.st,i=state.showTo.indexOf(g); if(i>=0)state.showTo.splice(i,1); else state.showTo.push(g); writeMyDoc(true); refreshMap(); }); });
@@ -971,12 +980,18 @@ const fbDb = getFirestore(fbApp);
   startBtn.addEventListener('click',doStart);
 
   function applyDeepLink(){
-    var pc=null; try{pc=new URLSearchParams(location.search).get('code');}catch(e){}
+    var pc=null,pg=null; try{var p=new URLSearchParams(location.search);pc=p.get('code');pg=p.get('g');}catch(e){}
     if(!pc) return false;
     state_action='join';
     document.querySelectorAll('[data-act]').forEach(function(x){x.classList.toggle('sel',x.dataset.act==='join');});
     $('joinFields').style.display='';
     $('codeInput').value=pc.toUpperCase();
+    if(pg==='Family'||pg==='Team'){
+      state.mode=pg;
+      $('modeField').style.display='none'; $('modeLocked').style.display='';
+      $('modeLockIc').textContent=pg==='Family'?'👨‍👩‍👧‍👦':'👷';
+      $('modeLockText').textContent=groupLabel(pg);
+    }
     refreshStart();
     return true;
   }
