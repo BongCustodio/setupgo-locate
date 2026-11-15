@@ -129,6 +129,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .selbar .sb-x{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--navy-700);color:var(--ink-dim);font-size:13px;cursor:pointer;flex:none;}
 .geo-circle{position:absolute;border-radius:50%;border:2px solid rgba(244,63,94,.65);background:rgba(244,63,94,.1);transform:translate(-50%,-50%);}
 .geo-label{position:absolute;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:var(--ink);background:rgba(11,16,32,.82);border:1px solid rgba(244,63,94,.4);padding:3px 9px;border-radius:10px;white-space:nowrap;}
+.geo-pin{position:absolute;transform:translate(-50%,-50%);width:28px;height:28px;border-radius:50%;background:var(--grad);border:2.5px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,.55);cursor:grab;pointer-events:auto;z-index:3;touch-action:none;}
+.geo-pin:active{cursor:grabbing;transform:translate(-50%,-50%) scale(1.12);}
+.geo-pin::after{content:"✥";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:900;}
 
 .sosbtn{position:absolute;right:16px;bottom:238px;z-index:10;width:48px;height:48px;border-radius:14px;background:#ef4444;border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(239,68,68,.6);letter-spacing:.5px;}
 .sosbtn.on{animation:sospulse 1s infinite;}
@@ -493,7 +496,7 @@ const fbDb = getFirestore(fbApp);
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"📍 I-drag/i-center mo muna ang mapa sa TAMANG lugar bago mag-save (doon ilalagay).", save:"I-save", cancel:"Kanselahin",
-      moveHere:"Ilipat dito", placeMoved:"Inilipat sa gitna ng mapa ✓", placeAdded:"Naidagdag ✓ — pwede i-move o i-delete sa listahan", deletePlaceQ:"I-delete ang lugar na ", placeDeleted:"Na-delete ang lugar ✓",
+      moveHere:"Ilipat dito", placeMoved:"Inilipat sa gitna ng mapa ✓", placeAdded:"Naidagdag ✓ — i-drag ang pin 🔴 sa mapa para itama ang lugar", deletePlaceQ:"I-delete ang lugar na ", placeDeleted:"Na-delete ang lugar ✓",
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
@@ -549,7 +552,7 @@ const fbDb = getFirestore(fbApp);
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"📍 Center the map on the RIGHT spot before saving (it's placed there).", save:"Save", cancel:"Cancel",
-      moveHere:"Move here", placeMoved:"Moved to map center ✓", placeAdded:"Added ✓ — move or delete it in the list", deletePlaceQ:"Delete place ", placeDeleted:"Place deleted ✓",
+      moveHere:"Move here", placeMoved:"Moved to map center ✓", placeAdded:"Added ✓ — drag the 🔴 pin on the map to fix its spot", deletePlaceQ:"Delete place ", placeDeleted:"Place deleted ✓",
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
@@ -655,6 +658,10 @@ const fbDb = getFirestore(fbApp);
       var cx=txU(this.cLng,this.z)*256, cy=tyU(this.cLat,this.z)*256;
       return {x:txU(lng,this.z)*256-(cx-this.w/2), y:tyU(lat,this.z)*256-(cy-this.h/2)};
     },
+    unproject:function(px,py){
+      var cx=txU(this.cLng,this.z)*256, cy=tyU(this.cLat,this.z)*256;
+      return {lng:x2lon((px+cx-this.w/2)/256,this.z), lat:y2lat((py+cy-this.h/2)/256,this.z)};
+    },
     setMe:function(ll,show){ this.me=ll?{lat:ll.lat,lng:ll.lng,show:show,name:state.name,sos:state.sos}:null; this.render(); },
     setMembers:function(list){ this.members=list.filter(function(m){return m._ll;}).map(function(m){return {id:m.id,lat:m._ll[0],lng:m._ll[1],color:m.color,name:m.name,sos:m.sos};}); this.render(); },
     setGeofences:function(list){ this.geofences=list||[]; this.render(); },
@@ -673,10 +680,34 @@ const fbDb = getFirestore(fbApp);
       if(!this.geo)return; var self=this,h='';
       (this.geofences||[]).forEach(function(g){
         var p=self.project(g.lat,g.lng), pr=g.radius/self.metersPerPixel(g.lat);
-        h+='<div class="geo-circle" style="left:'+p.x+'px;top:'+p.y+'px;width:'+(pr*2)+'px;height:'+(pr*2)+'px"></div>';
-        h+='<div class="geo-label" style="left:'+p.x+'px;top:'+(p.y-pr-4)+'px">'+g.name+'</div>';
+        h+='<div class="geo-circle" data-gid="'+g.id+'" style="left:'+p.x+'px;top:'+p.y+'px;width:'+(pr*2)+'px;height:'+(pr*2)+'px"></div>';
+        h+='<div class="geo-label" data-gid="'+g.id+'" style="left:'+p.x+'px;top:'+(p.y-pr-4)+'px">'+g.name+'</div>';
+        if(self.geoEditable) h+='<div class="geo-pin" data-gid="'+g.id+'" title="I-drag" style="left:'+p.x+'px;top:'+p.y+'px"></div>';
       });
       this.geo.innerHTML=h;
+      if(self.geoEditable) self.wireGeoPins();
+    },
+    wireGeoPins:function(){
+      var self=this;
+      this.geo.querySelectorAll('.geo-pin').forEach(function(pin){
+        pin.addEventListener('pointerdown',function(e){
+          e.stopPropagation(); e.preventDefault();
+          var gid=pin.dataset.gid, rect=self.el.getBoundingClientRect();
+          try{pin.setPointerCapture(e.pointerId);}catch(_){}
+          function move(ev){
+            var px=ev.clientX-rect.left, py=ev.clientY-rect.top;
+            var ll=self.unproject(px,py);
+            var g=(self.geofences||[]).filter(function(x){return x.id===gid;})[0]; if(!g)return;
+            g.lat=ll.lat; g.lng=ll.lng;
+            var pr=g.radius/self.metersPerPixel(g.lat);
+            var c=self.geo.querySelector('.geo-circle[data-gid="'+gid+'"]'); if(c){c.style.left=px+'px';c.style.top=py+'px';}
+            var lb=self.geo.querySelector('.geo-label[data-gid="'+gid+'"]'); if(lb){lb.style.left=px+'px';lb.style.top=(py-pr-4)+'px';}
+            pin.style.left=px+'px'; pin.style.top=py+'px';
+          }
+          function up(){ pin.removeEventListener('pointermove',move); pin.removeEventListener('pointerup',up); pin.removeEventListener('pointercancel',up); if(self.onGeoMoved) self.onGeoMoved(gid); }
+          pin.addEventListener('pointermove',move); pin.addEventListener('pointerup',up); pin.addEventListener('pointercancel',up);
+        });
+      });
     },
     renderTiles:function(){
       var z=this.z, sc=Math.pow(2,z);
@@ -922,6 +953,8 @@ const fbDb = getFirestore(fbApp);
     computePlaces(list);
     declumpPins(list);
     var sel=state.selected?list.filter(function(m){return m.id===state.selected;})[0]:null;
+    MM.geoEditable=(state.role==='Admin');
+    MM.onGeoMoved=function(gid){ savePlaces(); toast(t('placeMoved')); draw(); };
     MM.setGeofences(state.places);
     MM.setTrail(sel?trailPoints(sel):null);
     MM.setMembers(list);
