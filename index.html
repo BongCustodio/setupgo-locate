@@ -180,6 +180,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .pm-radius{display:flex;gap:9px;margin-top:16px;}
 .pm-radius button{flex:1;padding:12px;border-radius:13px;border:1px solid var(--line);background:var(--navy-700);color:var(--ink-dim);font-weight:700;font-size:13px;cursor:pointer;}
 .pm-radius button.sel{background:var(--grad-soft);border-color:transparent;box-shadow:0 0 0 1.5px rgba(244,63,94,.55) inset;color:var(--ink);}
+.pm-vislabel{font-size:12px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin:16px 2px 8px;}
+.pm-vis{display:flex;gap:9px;}
+.pm-vis button{flex:1;padding:12px;border-radius:13px;border:1px solid var(--line);background:var(--navy-700);color:var(--ink-dim);font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.pm-vis button.sel{background:var(--grad-soft);border-color:transparent;box-shadow:0 0 0 1.5px rgba(244,63,94,.55) inset;color:var(--ink);}
+.place-chip .pv-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 6px;border-radius:7px;margin-top:7px;border:1px solid var(--line);color:var(--ink-dim);background:var(--navy-800);cursor:pointer;}
 .pm-btns{display:flex;gap:10px;margin-top:20px;}
 .pm-btns button{flex:1;padding:15px;border-radius:14px;font-size:15px;font-weight:800;cursor:pointer;border:none;}
 .pm-cancel{background:var(--navy-700);color:var(--ink);border:1px solid var(--line)!important;}
@@ -195,6 +200,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .topbar .langtog{transform:scale(.9);transform-origin:right center;}
 .recenter{position:absolute;right:16px;bottom:180px;z-index:10;width:48px;height:48px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:20px;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);}
 .recenter:active{transform:scale(.95);}
+.zoomctl{position:absolute;right:16px;bottom:236px;z-index:10;display:flex;flex-direction:column;gap:6px;}
+.zoomctl button{width:48px;height:44px;border-radius:14px;background:var(--navy-700);border:1px solid var(--line);color:var(--ink);font-size:24px;font-weight:700;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);padding:0;}
+.zoomctl button:active{transform:scale(.95);}
 .sheet{position:absolute;left:0;right:0;bottom:0;z-index:10;background:var(--navy-800);border-top-left-radius:26px;border-top-right-radius:26px;border-top:1px solid var(--line);box-shadow:0 -20px 50px -20px rgba(0,0,0,.7);padding:4px 16px calc(14px + env(safe-area-inset-bottom));max-height:82dvh;display:flex;flex-direction:column;transition:max-height .25s ease;}
 .grab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 9px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .grab-bar{width:40px;height:4px;border-radius:4px;background:rgba(255,255,255,.22);}
@@ -242,7 +250,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 @media(max-width:859px){
   .sheet:not(.expanded) .sheet-body{display:none;}
-  #mapscreen.sheet-open .recenter,#mapscreen.sheet-open .sosbtn{display:none;}
+  #mapscreen.sheet-open .recenter,#mapscreen.sheet-open .sosbtn,#mapscreen.sheet-open .zoomctl{display:none;}
 }
 @media(min-width:860px){
   #welcome .wc-inner,#welcome .wc-foot{max-width:480px;margin-left:auto;margin-right:auto;width:100%;}
@@ -253,10 +261,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   .grab{display:none;}
   .members{flex:1;overflow-y:auto;min-height:0;}
   .recenter{bottom:auto;top:96px;right:436px;}
+  .zoomctl{bottom:auto;top:152px;right:436px;}
   .connbadge{bottom:20px;}
   .sosalert{left:18px;right:432px;top:88px;}
 }
-@media(min-width:1200px){.sheet{width:440px;}.recenter{right:476px;}}
+@media(min-width:1200px){.sheet{width:440px;}.recenter{right:476px;}.zoomctl{right:476px;}}
 </style>
 </head>
 <body>
@@ -376,6 +385,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       <div class="langtog" data-langtog><button data-lang="fil">FIL</button><button data-lang="en">EN</button></div>
     </div>
     <div class="sosbtn" id="sosBtn">SOS</div>
+    <div class="zoomctl"><button id="zoomIn" aria-label="Zoom in">＋</button><button id="zoomOut" aria-label="Zoom out">−</button></div>
     <div class="recenter" id="recenter">◎</div>
     <div class="sheet" id="sheet">
       <div class="grab" id="grab"><span class="grab-bar"></span></div>
@@ -423,6 +433,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
           <button data-r="200" class="sel">200 m</button>
           <button data-r="500">500 m</button>
           <button data-r="1000">1 km</button>
+        </div>
+        <div class="pm-vislabel" id="pmVisLabel"></div>
+        <div class="pm-vis" id="pmVis">
+          <button data-v="Family" class="sel">👨‍👩‍👧‍👦 <span id="pmVisFam"></span></button>
+          <button data-v="Team" class="sel">👷 <span id="pmVisTeam"></span></button>
         </div>
         <div class="pm-btns">
           <button class="pm-cancel" id="pmCancel"></button>
@@ -497,6 +512,7 @@ const fbDb = getFirestore(fbApp);
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
       pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"📍 I-drag/i-center mo muna ang mapa sa TAMANG lugar bago mag-save (doon ilalagay).", save:"I-save", cancel:"Kanselahin",
       moveHere:"Ilipat dito", placeMoved:"Inilipat sa gitna ng mapa ✓", placeAdded:"Naidagdag ✓ — i-drag ang pin 🔴 sa mapa para itama ang lugar", deletePlaceQ:"I-delete ang lugar na ", placeDeleted:"Na-delete ang lugar ✓",
+      pmVisLabel:"Sino ang makakakita?", visFamOnly:"Pamilya lang", visTeamOnly:"Team lang", visAll:"Lahat", visNone:"Pumili ng Pamilya o Team", visChanged:"Na-update ✓",
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
@@ -553,6 +569,7 @@ const fbDb = getFirestore(fbApp);
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
       pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"📍 Center the map on the RIGHT spot before saving (it's placed there).", save:"Save", cancel:"Cancel",
       moveHere:"Move here", placeMoved:"Moved to map center ✓", placeAdded:"Added ✓ — drag the 🔴 pin on the map to fix its spot", deletePlaceQ:"Delete place ", placeDeleted:"Place deleted ✓",
+      pmVisLabel:"Who can see this?", visFamOnly:"Family only", visTeamOnly:"Team only", visAll:"Everyone", visNone:"Pick Family or Team", visChanged:"Updated ✓",
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
@@ -736,18 +753,37 @@ const fbDb = getFirestore(fbApp);
       if(this.me&&this.me.show){ this.me.id='me'; h+=pin(this.me,true); }
       this.ovl.innerHTML=h;
     },
+    setZoom:function(nz){ nz=Math.max(3,Math.min(19,Math.round(nz))); if(nz===this.z)return; this.z=nz; this.render(); },
     bindPan:function(){
-      var el=this.el, self=this, drag=null;
-      el.addEventListener('pointerdown',function(e){drag={x:e.clientX,y:e.clientY,cLat:self.cLat,cLng:self.cLng};try{el.setPointerCapture(e.pointerId);}catch(_){}});
+      var el=this.el, self=this, drag=null, pts={}, pinch=null;
+      el.addEventListener('pointerdown',function(e){
+        pts[e.pointerId]={x:e.clientX,y:e.clientY};
+        try{el.setPointerCapture(e.pointerId);}catch(_){}
+        var ids=Object.keys(pts);
+        if(ids.length>=2){ var a=pts[ids[0]],b=pts[ids[1]]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y),z:self.z}; drag=null; }
+        else { drag={x:e.clientX,y:e.clientY,cLat:self.cLat,cLng:self.cLng}; }
+      });
       el.addEventListener('pointermove',function(e){
+        if(pts[e.pointerId]){ pts[e.pointerId].x=e.clientX; pts[e.pointerId].y=e.clientY; }
+        var ids=Object.keys(pts);
+        if(pinch && ids.length>=2){ var a=pts[ids[0]],b=pts[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y); if(pinch.d>0) self.setZoom(pinch.z+Math.log2(d/pinch.d)); return; }
         if(!drag)return;
         var dx=e.clientX-drag.x, dy=e.clientY-drag.y;
         var cx=txU(drag.cLng,self.z)*256, cy=tyU(drag.cLat,self.z)*256;
         self.cLng=x2lon((cx-dx)/256,self.z); self.cLat=y2lat((cy-dy)/256,self.z);
         self.render();
       });
-      var end=function(){drag=null;};
-      el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('pointerleave',end);
+      var end=function(e){ if(e&&e.pointerId!=null) delete pts[e.pointerId]; var ids=Object.keys(pts); if(ids.length<2) pinch=null; if(ids.length===0) drag=null; };
+      el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+      el.addEventListener('wheel',function(e){
+        e.preventDefault();
+        var rect=el.getBoundingClientRect(), px=e.clientX-rect.left, py=e.clientY-rect.top;
+        var before=self.unproject(px,py);
+        self.z=Math.max(3,Math.min(19,self.z+(e.deltaY<0?1:-1)));
+        var after=self.unproject(px,py);
+        self.cLat+=(before.lat-after.lat); self.cLng+=(before.lng-after.lng);
+        self.render();
+      },{passive:false});
     }
   };
 
@@ -864,16 +900,20 @@ const fbDb = getFirestore(fbApp);
     if(state.lang==='fil') return 'Si '+name+' ay '+(arrived?t('arrivedAt'):t('leftFrom'))+' '+place;
     return name+' '+(arrived?t('arrivedAt'):t('leftFrom'))+' '+place;
   }
+  function placeVis(g){ return (Array.isArray(g.vis)&&g.vis.length)?g.vis:['Family','Team']; }
+  function placeSeen(g){ var v=placeVis(g); if(state.role==='Admin'){ return state.filter==='all'||v.indexOf(state.filter)>=0; } return v.indexOf(state.mode)>=0; }
+  function visiblePlaces(){ return state.places.filter(placeSeen); }
+  function visBadge(g){ var v=placeVis(g); if(v.length>=2) return t('visAll'); return v[0]==='Family'?t('visFamOnly'):t('visTeamOnly'); }
   function computePlaces(list){
-    var ppl=peopleForGeo(list), cur={};
-    state.places.forEach(function(g){
+    var ppl=peopleForGeo(list), cur={}, vp=visiblePlaces();
+    vp.forEach(function(g){
       g.inside=[];
       ppl.forEach(function(p){ if(distM(g.lat,g.lng,p.lat,p.lng)<=g.radius){ g.inside.push(p); } });
       cur[g.id]=g.inside.map(function(p){return p.id;});
     });
     ppl.forEach(function(p){ state.geoNames[p.id]=p.name; });
     if(state.geoPrev){
-      state.places.forEach(function(g){
+      vp.forEach(function(g){
         var prev=state.geoPrev[g.id]||[], now=cur[g.id]||[];
         g.inside.forEach(function(p){ if(p.id!=='me' && prev.indexOf(p.id)<0) toast(geoMsg(p.name,g.name,true)); });
         prev.forEach(function(pid){ if(pid!=='me' && now.indexOf(pid)<0) toast(geoMsg(state.geoNames[pid]||'—',g.name,false)); });
@@ -886,14 +926,17 @@ const fbDb = getFirestore(fbApp);
     $('addPlaceBtn').textContent=t('addPlace');
     $('addPlaceBtn').style.display=(state.role==='Admin')?'':'none';
     var wrap=$('placesList'); wrap.innerHTML='';
-    if(state.places.length===0){ var e=document.createElement('div'); e.className='places-empty'; e.textContent=t('noPlaces'); wrap.appendChild(e); return; }
     var admin=state.role==='Admin';
-    state.places.forEach(function(g){
+    var shown=visiblePlaces();
+    if(shown.length===0){ var e=document.createElement('div'); e.className='places-empty'; e.textContent=t('noPlaces'); wrap.appendChild(e); return; }
+    shown.forEach(function(g){
       var el=document.createElement('div'); el.className='place-chip';
       var cnt=g.inside?g.inside.length:0;
-      el.innerHTML='<div class="pn">📍 '+g.name+'</div><div class="pc">'+(cnt>0?('<b>'+cnt+'</b> '+t('insideN')):t('nobodyHere'))+'</div>'+(admin?'<div class="pl-acts"><button class="pl-move" type="button">'+t('moveHere')+'</button><button class="pl-del" type="button" aria-label="delete">✕</button></div>':'');
+      var badge=admin?'<div class="pv-badge" title="'+t('pmVisLabel')+'">👁 '+visBadge(g)+'</div>':'';
+      el.innerHTML='<div class="pn">📍 '+g.name+'</div><div class="pc">'+(cnt>0?('<b>'+cnt+'</b> '+t('insideN')):t('nobodyHere'))+'</div>'+badge+(admin?'<div class="pl-acts"><button class="pl-move" type="button">'+t('moveHere')+'</button><button class="pl-del" type="button" aria-label="delete">✕</button></div>':'');
       el.addEventListener('click',function(){MM.setView(g.lat,g.lng);});
       if(admin){
+        var bg=el.querySelector('.pv-badge'); if(bg) bg.addEventListener('click',function(e){ e.stopPropagation(); var v=placeVis(g); var cur=v.length>=2?'both':v[0]; g.vis=(cur==='both')?['Family']:(cur==='Family'?['Team']:['Family','Team']); savePlaces(); renderPlaces(); draw(); toast(t('visChanged')+' — '+visBadge(g)); });
         var mv=el.querySelector('.pl-move'); if(mv) mv.addEventListener('click',function(e){ e.stopPropagation(); g.lat=MM.cLat; g.lng=MM.cLng; savePlaces(); draw(); toast(t('placeMoved')); });
         var dl=el.querySelector('.pl-del'); if(dl) dl.addEventListener('click',function(e){ e.stopPropagation(); if(confirm(t('deletePlaceQ')+g.name+'?')){ state.places=state.places.filter(function(x){return x.id!==g.id;}); savePlaces(); draw(); toast(t('placeDeleted')); } });
       }
@@ -955,7 +998,7 @@ const fbDb = getFirestore(fbApp);
     var sel=state.selected?list.filter(function(m){return m.id===state.selected;})[0]:null;
     MM.geoEditable=(state.role==='Admin');
     MM.onGeoMoved=function(gid){ savePlaces(); toast(t('placeMoved')); draw(); };
-    MM.setGeofences(state.places);
+    MM.setGeofences(visiblePlaces());
     MM.setTrail(sel?trailPoints(sel):null);
     MM.setMembers(list);
     renderPlaces();
@@ -1065,6 +1108,8 @@ const fbDb = getFirestore(fbApp);
       writeMyDoc(true); refreshMap();
     });
     $('recenter').addEventListener('click',function(){ if(state.hasFix&&state.youLatLng){MM.setView(state.youLatLng.lat,state.youLatLng.lng,15);} else {forceLocate();} });
+    $('zoomIn').addEventListener('click',function(){ MM.setZoom(MM.z+1); });
+    $('zoomOut').addEventListener('click',function(){ MM.setZoom(MM.z-1); });
 
     function shareInvite(group){
       var link=location.origin+location.pathname+'?code='+(G.code||'')+'&g='+group;
@@ -1093,19 +1138,23 @@ const fbDb = getFirestore(fbApp);
       writeMyDoc(true); refreshMap();
     });
 
-    var pmRadius=500;
+    var pmRadius=500, pmVisSel=['Family','Team'];
+    function paintPmVis(){ document.querySelectorAll('#pmVis button').forEach(function(b){ b.classList.toggle('sel',pmVisSel.indexOf(b.dataset.v)>=0); }); }
     function openPM(){
       $('pmTitle').textContent=t('pmTitle');$('pmName').placeholder=t('placeNamePh');$('pmHint').textContent=t('pmHint');
       $('pmCancel').textContent=t('cancel');$('pmSave').textContent=t('save');$('pmName').value='';pmRadius=500;
+      $('pmVisLabel').textContent=t('pmVisLabel');$('pmVisFam').textContent=t('gFamily');$('pmVisTeam').textContent=t('gTeam');
+      pmVisSel=['Family','Team']; paintPmVis();
       document.querySelectorAll('#pmRadius button').forEach(function(b){b.classList.toggle('sel',+b.dataset.r===pmRadius);});
       $('placeModal').classList.add('show');
     }
     $('addPlaceBtn').addEventListener('click',openPM);
     document.querySelectorAll('#pmRadius button').forEach(function(b){b.addEventListener('click',function(){pmRadius=+b.dataset.r;document.querySelectorAll('#pmRadius button').forEach(function(x){x.classList.remove('sel');});b.classList.add('sel');});});
+    document.querySelectorAll('#pmVis button').forEach(function(b){b.addEventListener('click',function(){ var v=b.dataset.v,i=pmVisSel.indexOf(v); if(i>=0){ if(pmVisSel.length>1) pmVisSel.splice(i,1); } else { pmVisSel.push(v); } paintPmVis(); });});
     $('pmCancel').addEventListener('click',function(){$('placeModal').classList.remove('show');});
     $('pmSave').addEventListener('click',function(){
       var nm=$('pmName').value.trim()||(state.lang==='fil'?'Lugar':'Place');
-      state.places.push({id:'p'+Date.now(),name:nm,lat:MM.cLat,lng:MM.cLng,radius:pmRadius});
+      state.places.push({id:'p'+Date.now(),name:nm,lat:MM.cLat,lng:MM.cLng,radius:pmRadius,vis:pmVisSel.slice()});
       $('placeModal').classList.remove('show'); draw(); savePlaces(); toast(t('placeAdded'));
     });
   }
