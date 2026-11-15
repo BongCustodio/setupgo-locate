@@ -147,6 +147,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .place-chip .pn{font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:6px;}
 .place-chip .pc{font-size:11.5px;color:var(--ink-dim);margin-top:3px;}
 .place-chip .pc b{color:var(--green);}
+.place-chip .pl-acts{display:flex;gap:6px;margin-top:9px;}
+.place-chip .pl-move{flex:1;font-size:11px;font-weight:700;padding:6px 8px;border-radius:9px;border:1px solid var(--line);background:var(--navy-800);color:var(--ink);cursor:pointer;}
+.place-chip .pl-move:active{background:var(--navy-900);}
+.place-chip .pl-del{flex:none;width:28px;font-size:12px;font-weight:800;padding:6px 0;border-radius:9px;border:1px solid rgba(239,68,68,.4);background:transparent;color:#f87171;cursor:pointer;}
 .places-empty{font-size:12px;color:var(--ink-faint);padding:4px 6px 2px;line-height:1.5;}
 .invitebar{display:flex;flex-direction:column;gap:11px;padding:13px 14px;border-radius:16px;background:var(--navy-700);border:1px dashed rgba(244,63,94,.5);margin-bottom:12px;}
 .invitebar .inv-k{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-faint);font-weight:700;}
@@ -488,7 +492,8 @@ const fbDb = getFirestore(fbApp);
       errDenied:"Na-block ang location — i-allow sa 🔒 sa address bar, tapos i-reload", errGps:"Hinahanap pa ang GPS — subukang lumabas sa mas bukas na lugar", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Mga Lugar", addPlace:"＋ Lugar", noPlaces:"Wala pang lugar. Magdagdag para makita kung sino ang naroon.",
-      pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"Ilalagay sa kasalukuyang gitna ng map", save:"I-save", cancel:"Kanselahin",
+      pmTitle:"Magdagdag ng lugar", placeNamePh:"hal. Opisina, Bahay, Site", pmHint:"📍 I-drag/i-center mo muna ang mapa sa TAMANG lugar bago mag-save (doon ilalagay).", save:"I-save", cancel:"Kanselahin",
+      moveHere:"Ilipat dito", placeMoved:"Inilipat sa gitna ng mapa ✓", placeAdded:"Naidagdag ✓ — pwede i-move o i-delete sa listahan", deletePlaceQ:"I-delete ang lugar na ", placeDeleted:"Na-delete ang lugar ✓",
       insideN:"nasa loob", nobodyHere:"wala pa", arrivedAt:"dumating sa", leftFrom:"umalis sa",
       sosOn:"Nag-SOS ka — hinihingi ang tulong", sosOff:"Kinansela ang SOS", needsHelp:"hinihingi ang tulong",
       qAction:"Ano ang gagawin mo?", actCreateT:"Gumawa ng grupo", actCreateD:"Ikaw ang admin — makikita ang lahat.", actJoinT:"Sumali sa grupo", actJoinD:"Gamitin ang invite code mula sa admin.",
@@ -543,7 +548,8 @@ const fbDb = getFirestore(fbApp);
       errDenied:"Location is blocked — allow it via the 🔒 in the address bar, then reload", errGps:"Still finding GPS — try moving to a more open spot", gpsWait:"⏳ GPS…",
       LIVE:"LIVE", DEMO:"DEMO (preview)",
       places:"Places", addPlace:"＋ Place", noPlaces:"No places yet. Add one to see who's there.",
-      pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"Placed at the current map center", save:"Save", cancel:"Cancel",
+      pmTitle:"Add a place", placeNamePh:"e.g. Office, Home, Site", pmHint:"📍 Center the map on the RIGHT spot before saving (it's placed there).", save:"Save", cancel:"Cancel",
+      moveHere:"Move here", placeMoved:"Moved to map center ✓", placeAdded:"Added ✓ — move or delete it in the list", deletePlaceQ:"Delete place ", placeDeleted:"Place deleted ✓",
       insideN:"inside", nobodyHere:"nobody yet", arrivedAt:"arrived at", leftFrom:"left",
       sosOn:"You raised SOS — asking for help", sosOff:"SOS cancelled", needsHelp:"needs help",
       qAction:"What do you want to do?", actCreateT:"Create a group", actCreateD:"You're the admin — see everyone.", actJoinT:"Join a group", actJoinD:"Use an invite code from the admin.",
@@ -850,11 +856,16 @@ const fbDb = getFirestore(fbApp);
     $('addPlaceBtn').style.display=(state.role==='Admin')?'':'none';
     var wrap=$('placesList'); wrap.innerHTML='';
     if(state.places.length===0){ var e=document.createElement('div'); e.className='places-empty'; e.textContent=t('noPlaces'); wrap.appendChild(e); return; }
+    var admin=state.role==='Admin';
     state.places.forEach(function(g){
       var el=document.createElement('div'); el.className='place-chip';
       var cnt=g.inside?g.inside.length:0;
-      el.innerHTML='<div class="pn">📍 '+g.name+'</div><div class="pc">'+(cnt>0?('<b>'+cnt+'</b> '+t('insideN')):t('nobodyHere'))+'</div>';
+      el.innerHTML='<div class="pn">📍 '+g.name+'</div><div class="pc">'+(cnt>0?('<b>'+cnt+'</b> '+t('insideN')):t('nobodyHere'))+'</div>'+(admin?'<div class="pl-acts"><button class="pl-move" type="button">'+t('moveHere')+'</button><button class="pl-del" type="button" aria-label="delete">✕</button></div>':'');
       el.addEventListener('click',function(){MM.setView(g.lat,g.lng);});
+      if(admin){
+        var mv=el.querySelector('.pl-move'); if(mv) mv.addEventListener('click',function(e){ e.stopPropagation(); g.lat=MM.cLat; g.lng=MM.cLng; savePlaces(); draw(); toast(t('placeMoved')); });
+        var dl=el.querySelector('.pl-del'); if(dl) dl.addEventListener('click',function(e){ e.stopPropagation(); if(confirm(t('deletePlaceQ')+g.name+'?')){ state.places=state.places.filter(function(x){return x.id!==g.id;}); savePlaces(); draw(); toast(t('placeDeleted')); } });
+      }
       wrap.appendChild(el);
     });
   }
@@ -1062,7 +1073,7 @@ const fbDb = getFirestore(fbApp);
     $('pmSave').addEventListener('click',function(){
       var nm=$('pmName').value.trim()||(state.lang==='fil'?'Lugar':'Place');
       state.places.push({id:'p'+Date.now(),name:nm,lat:MM.cLat,lng:MM.cLng,radius:pmRadius});
-      $('placeModal').classList.remove('show'); draw(); savePlaces();
+      $('placeModal').classList.remove('show'); draw(); savePlaces(); toast(t('placeAdded'));
     });
   }
 
